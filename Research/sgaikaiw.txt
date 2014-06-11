@@ -1,0 +1,6 @@
+@phdthesis{gaikaiwari2005adapting,
+  title={Adapting SNOBOL-style Patterns to the Unicon Language},
+  author={Gaikaiwari, Sudarshan},
+  year={2005},
+  school={New Mexico State University}
+}
