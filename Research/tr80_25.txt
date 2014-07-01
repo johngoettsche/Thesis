@@ -1,0 +1,6 @@
+@book{griswold1980pattern,
+  title={Pattern Matching in Icon},
+  author={Griswold, Ralph E},
+  year={1980},
+  publisher={University of Arizona, Department of Computer Science}
+}
