@@ -7,7 +7,7 @@
 %\usepackage{setspace}
 %\doublespacing
 
-%\usepackage{cite}
+\usepackage{cite}
 
 \usepackage[pdftex]{graphicx}
 % declare the path(s) where your graphic files are
@@ -19,7 +19,7 @@
 
 \begin{document}
 
-\title{Implementing Pattern Matching in Unicon}
+\title{Integrating pattern data types with Unicon string scanning}
 \author{John H. Goettsche\\
   Dept.\ of Computer Science\\
   University of Idaho}
@@ -33,5 +33,33 @@
 
 \section{Introduction}
 
-SNOBOL4's string scanning facilities was designed around a pattern data type.  T and Icon both provide string scanning facilities.  SNOBOL4 used a pattern matching system
+Editing, manipulating and analyzing text are common tasks performed by programming languages.  How a programming language searches for patterns within a body of text is an important area of computer science affecting the effectiveness and efficiency in scanning text.
+
+The first section of this paper will review history and development of the scanning frameworks that originated from the SNOBOL4-Icon programming languages. 
+
+\section{Background}
+
+\subsection{SNOBOL4}
+SNOBOL4 was developed by Bell Telephone Laboratories in 1962.  Searching for a desired pattern within a string of characters is one of its basic operations.  This pattern matching could be as simple as a single character or a set of characters in a particular order, or it can be a complex arrangement with alternative character sets.  A pattern data type was used enabling the user to define and store patterns as variables.~\cite{Snobol}
+
+The pattern matching statement in a SNOBOL4 program is in the form of a subject followed by at least one space then the pattern. 
+
+\begin{verbatim}
+SUBJECT  PATTERN
+\end{verbatim}
+In the above line, SUBJECT would be scanned to see if it contains the contents of PATTERN, if it succeeds, then a substring of SUBJECT that fits PATTERN would be returned.  In the anchored mode the pattern would have to begin its match at the first character of the subject string; in the non-anchored mode the pattern could start at any character in the string.
+
+\subsection{Icon-Unicon}
+Icon's string scanning framework used an ...
+
+\subsection{Sudarshan Gaikaiwari's Implementation of SNOBOL4 Patterns}
+
+\section{Design Considerations}
+
+\section{Implementation}
+
+\pagebreak
+\bibliography{Thesis}
+\bibliographystyle{plain}
+
 \end{document}
