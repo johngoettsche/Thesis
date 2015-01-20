@@ -1,0 +1,28 @@
+\begin{thebibliography}{1}
+
+\bibitem{Snobol}
+R.~E. Griswold, I.~P. Polonsky, and J.~Poage, {\em The SNOBOL4 Programming
+  Language}.
+\newblock Prentice-Hall, 1971.
+
+\bibitem{Gaikaiwari2005}
+S.~Gaikaiwari, ``{Adapting SNOBOL-style Patterns to the Unicon Language},''
+  Master's thesis, New Mexico State University, 2005.
+
+\bibitem{GriswoldIcon}
+R.~E. Griswold and M.~T. Griswold, {\em The Icon Programming Language}.
+\newblock Prentice-Hall Englewood Cliffs, NJ, 3~ed., 1983.
+
+\bibitem{Griswold1980}
+R.~E. Griswold, {\em Pattern Matching in Icon}.
+\newblock University of Arizona, Department of Computer Science, 1980.
+
+\bibitem{JefferyUnicon}
+C.~Jeffery, S.~Mohamed, R.~Pereda, and R.~Parlett, {\em Programming with
+  Unicon}.
+\newblock 2004.
+
+\bibitem{JefferyImp}
+C.~Jeffery, {\em Implementation of Icon and Unicon}.
+
+\end{thebibliography}
