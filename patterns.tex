@@ -1,6 +1,6 @@
 
 \documentclass{article}
-
+\usepackage[margin=1.5in]{geometry}
 %\usepackage{fullpage}
 %\usepackage{setspace}
 %\doublespacing
@@ -124,9 +124,9 @@ The pattern operators for Unicon were defined by Gaikaiwari in his Master's Thes
 		\hline
 	\end{tabular}
 \end{table}
-***** memory violation *****\\
-The Unicon operator for concatenation was modified to recognize whether the expression contains a pattern.\\
-**********
+The Unicon operator for string concatenation was modified to recognize whether the expression contains a pattern.  Since the pattern concatenation and Unicon's string concatenation operators do not have the same order of presidents, this resulted in some changes for writing pattern definitions as 
+
+****this is where I describe the differences. ****
 
 The assignment operators was changed lexically to use the \texttt{$>$} symbol to represent an assignment within patterns.  The Immediate Assignment, Conditional Assignment and Cursor assignment are \texttt{$=>$}, \texttt{$->$} and \texttt{.$>$} respectively.
 
@@ -373,60 +373,52 @@ struct b_list *ResolveList(struct b_list *lp)
 {
    struct descrip proc;
    struct descrip var;
-
    tended struct b_lelem *elsrc;
-   tended struct b_lelem *eldest;
    int i, nargs;
    tended struct b_list *lpsrc;
    tended struct b_list *lpdest;
    struct b_list *lptemp;
    tended char *temp;
- 
    lpsrc = lp;
    lpdest = alclist(lpsrc->size,lpsrc->size);
-
    DEBUGF(20,(stdout, "Resolving function name and parameters"));
    nargs = lpsrc->size -1;
    elsrc = (struct b_lelem *)lpsrc->listhead;
    proc.dword = D_Proc;
-
    BlkLoc(proc)= (union block *)strprc(&elsrc->lslots[0],nargs);
    if (BlkLoc(proc) == NULL) {
+      fprintf(stdout, "Unable to find proc");
       fatalerr(0, NULL);
       }
-   eldest = (struct b_lelem *)lpdest->listhead;
-   eldest->lslots[0] = proc;
    for (; BlkType(elsrc) == T_Lelem; elsrc = (struct b_lelem *)elsrc->listnext) {
       for (i = 1; i < elsrc->nused; i++) {
          tended char * varname;
          struct descrip parm;
+         dptr pvar;
          if (is:string(elsrc->lslots[i])) {
-            /* if a string constant, drop double quotes, else lookup using getvar() */
             cnv:C_string(elsrc->lslots[i], varname);
-            if ((StrLen(elsrc->lslots[i])>0) && (strcspn(varname, "\'") == 0)) {
-               /* drop the single quotes, but pass string as a cset */
-               StrLoc(elsrc->lslots[i]) = StrLoc(elsrc->lslots[i]) + 1;
-               StrLen(elsrc->lslots[i]) = StrLen(elsrc->lslots[i]) - 2;
-               cnv:cset(elsrc->lslots[i], elsrc->lslots[i]);
-               parm = elsrc->lslots[i];
-               cnv:C_string(elsrc->lslots[i], temp);
-               }
-            else if ((StrLen(elsrc->lslots[i])>0) && (strcspn(varname, "\"") == 0)) {
-               /* drop the double quotes, but pass string as a string */
-               StrLoc(elsrc->lslots[i]) = StrLoc(elsrc->lslots[i]) + 1;
-               StrLen(elsrc->lslots[i]) = StrLen(elsrc->lslots[i]) - 2;
-               cnv:string(elsrc->lslots[i], elsrc->lslots[i]);
-               parm = elsrc->lslots[i];
-               cnv:C_string(elsrc->lslots[i], temp);
-               }
-            else {
-               /* look up variable */
-               cnv:C_string(elsrc->lslots[i],varname);
-               if ( getvar(varname,&parm)== Failed) {
-                  VariableLookupFailed(varname);
+            if (StrLen(elsrc->lslots[i])>0) {
+               if (strcspn(varname, "\'") == 0) { 
+                  /* drop the quotes, but pass string as a cset */
+                  StrLoc(elsrc->lslots[i]) = StrLoc(elsrc->lslots[i]) + 1;
+                  StrLen(elsrc->lslots[i]) = StrLen(elsrc->lslots[i]) - 2;
+                  cnv:cset(elsrc->lslots[i], elsrc->lslots[i]);
+                  parm = elsrc->lslots[i];
                   }
-               eldest->lslots[i] = parm;
-               cnv:C_string(parm, temp);
+               else if (strcspn(varname, "\"") == 0) {
+                  /* drop the quotes, but pass string as a cset */
+                  StrLoc(elsrc->lslots[i]) = StrLoc(elsrc->lslots[i]) + 1;
+                  StrLen(elsrc->lslots[i]) = StrLen(elsrc->lslots[i]) - 2;
+                  cnv:string(elsrc->lslots[i], elsrc->lslots[i]);
+                  parm = elsrc->lslots[i];
+                  }
+               else {
+                  if ( getvar(varname, &parm) == Failed) {
+                     VariableLookupFailed(varname);
+                     }
+                  pvar = VarLoc(parm);
+                  elsrc->lslots[i] = *pvar;
+                  }
                }
             }
          else if (is:list(elsrc->lslots[i])) {
@@ -438,7 +430,6 @@ struct b_list *ResolveList(struct b_list *lp)
             /* cset, integer constant, ... */
             parm = elsrc->lslots[i];
             }
-         eldest->lslots[i] = parm;
          }
       }
    return lpdest;
@@ -584,22 +575,33 @@ To evaluate the how successful this implementation of SNOBOL4 type patterns with
 \item Decomposing phone numbers
 \item Detecting words with double letters
 \item Strings of the form \emph{$A^nB^nC^n$}
-\item Number of times a word is used
+\item Number of times a word is used in a file
 \end{itemize}
 
 \subsection{Decomposing phone numbers}
-For the purpose of Decomposing phone numbers in North America, each piece of example code will have to be able to identify the area code, trunk and the remainder of the number.  The following example phone numbers should be recognizable:
+For the purpose of Decomposing phone numbers in North America, each piece of example code will have to be able to identify the following:
 
 \begin{enumerate}
-\item 800-555-1212
-\item 800 555 1212
-\item 800.555.1212
-\item (800) 555-1212
-\item 1-800-555-1212
-\item 1-(800) 555-1212
+\item area code is three digits with or without parentheses.
+\item optional separator
+\item trunk is three digits
+\item optional separator
+\item remaining four digits of the number
+\item optional separator
+\item optional extension number of an unspecified length
+\end{enumerate}
+area code, trunk, the remainder of the number.  The following example phone numbers should be recognizable:
+
+\begin{enumerate}
+\item 800-555-1212-99
+\item 800 555 1212 99
+\item 800.555.1212.99
+\item (800) 555-1212x99
+\item 1-800-555-1212\#99
+\item 1-(800) 555-1212 ext. 99
 \end{enumerate}
 
-An input fragment of "\texttt{Home: (800) 555-1212}" should result in identifying the area code as \texttt{800}, the trunk as \texttt{555} and the remainder of the number as being \texttt{1212}.
+An input fragment of "\texttt{Home: (800) 555-1212x99}" should result in identifying the area code as \texttt{800}, the trunk as \texttt{555}, the remainder of the number as being \texttt{1212} and the extension being \texttt{99}.
 
 In the string scanning environment it can be achieved with the following code:
 \begin{verbatim}
@@ -694,11 +696,11 @@ In order to identify each word from a source file that has double letters, the p
 \item tomorrow
 \end{itemize}
 
-Sudarshan Gaikaiwari used the first two examples in \cite{Gaikaiwari2005}.  The first example demonstrates how this problem can be resolved using the string scanning environment.
+The string scanning example was used in\cite{Gaikaiwari2005} and is shown below.
 \begin{verbatim}
 procedure main()
-   in := open("testfile.txt", "r") | stop("open failed")
-   out := open("output.txt", "w")
+   in := open("mtent12.txt", "r") | stop("open failed")
+   out := open("mtentpatternOut.txt", "w")
    while line := read(in) do {
       line ? {
          while(tab(upto(&letters))) do {
@@ -718,28 +720,39 @@ end
 \end{verbatim}
 It uses a nested call to the string scanning environment, the first to identify a word and the second to test to see if the word contains a double letter.  If it is successful then it outputs the word.
 
-The second example Gaikaiwari provided was how the same problem can be solved by using the pattern matching system he implemented.  The code below has been revised to match this integration.
+The next example provided in \cite{Gaikaiwari2005} shows how the problem can be solved by using Gaikaiwari's pattern data type and matching system.  
 \begin{verbatim}
 procedure main()
-   in := open("testfile.txt", "r") | stop("open failed")
-   out := open("output.txt", "w")
-   double := Arbno(&letters) || (Any(&letters) => x) || `x` || (Span(&letters) .| "")
+   in := open("mtent12.txt", "r") | stop("open failed")
+   out := open("mtentpatternOut.txt, "w")
+   double := PArbno(&letters) && PAny(&letters) $$ x && `x` && 
+      (PSpan(&letters) .| "")
+   every write(out, (line := !in) ?? double)
+\end{verbatim}
+
+The sample code below is the same as Gaikaiwari's, but it has been revised for this integration of Unicon patterns.
+\begin{verbatim}
+procedure main()
+   in := open("mtent12.txt", "r") | stop("open failed")
+   out := open("mtentpatternOut.txt", "w")
+   double := Arbno(&letters) || (Any(&letters) => x) || `x` ||
+      (Span(&letters) .| "")
    every write(out, (line := !in) ?? double)
 end 
 \end{verbatim}
-Again the code is much shorter.
+In both cases the code is much shorter than the string scanning example.  This integration of Unicon patterns are simpler to read in part because the each concatenated pattern element is lexically identifiable with the \texttt{$||$} and the order of operations require the assignments and alternations to be defined within parentheses.  While in the Gaikaiwari patterns the aesthetic similarity of \texttt{\$\$} for concatenation and \texttt{\&\&} for immediate assignment can make them difficult to differentiate in complex patterns. 
 
 In this example the string scanning environment is initialized to identify each word, then each word is tested for any double letters, using a pattern sequence which is simpler that the one used in the previous example.
 \begin{verbatim}
 procedure main()
-   in := open("testfile.txt", "r") | stop("open failed")
-   out := open("output.txt", "w")
-   double := (Any(&letters) => x) || `x` 
+   in := open("mtent12.txt", "r") | stop("open failed")
+   out := open("mtentpatternOut.txt", "w")
+   double := Arb() || (Any(&letters) => x) || `x`
    while line := read(in) do {
       line ? {
          while(tab(upto(&letters))) do {
             word := tab(many(&letters))
-            if word ?? double then write(out, word)
+            if word ? =double then write(out, word)
          }
       }
    }
@@ -753,9 +766,10 @@ end
 		\hline\hline
 		 & Lines & Words & Chars w/ ws & Chars wo/ ws\\
 		\hline
-		String scanning & 18 & 53 & 462 & 242 \\
-		Patterns & 6 & 34 & 238 & 197 \\
-		Pattern and string scanning & 13 & 46 & 345 & 241 \\
+		String scanning & 18 & 53 & 470 & 250 \\
+		Gaikaiwari's Patterns & 6 & 34 & 245 & 205 \\
+		Unicon Patterns & 6 & 34 & 250 & 205 \\
+		Pattern and string scanning & 13 & 48 & 373 & 256 \\
 		\hline
 	\end{tabular}
 \end{table}
@@ -780,24 +794,44 @@ end
 \end{verbatim}
 The program defines a procedure ABC which is called in a string scanning environment to see if it contains the form $a^nb^nc^n$ and no other characters following.  Defining a procedure to test for a pattern is a common way to handle patterns when the pattern data type is not available.
 
-The following example uses the pattern matching environment and is able to resolve the problem with 9 lines of code.
+Below is the example code Gaikaiwari provided to solve this problem using his implementation of patterns.  
+\begin{verbatim}
+procedure test(a, b, c)
+   return ((a - 1) = (b - a)) & ((a - 1) = (c - b))
+end
+
+procedure main()
+   pattern := PPos(1) && PSpan("a") && .$ a && PSpan("b") && .$ b && 
+         PSpan("c") && .$ c && PRpos(0) && `test(a, b, c)`
+   while write(line := read()) do {
+      if(line ?? pattern) 
+         then write(" accepted")
+      else write(" rejected")
+   }
+end
+\end{verbatim}
+A test procedure was used to determine if the number of A's, B's and C's are equal.  This test was called at the end of the pattern definition causing the pattern succeed when they were all equal and fail when they were not.
+
+The following example is another example how this problem can be solved; this time for the this implementation of patterns.
 \begin{verbatim}
 procedure main()
-   p := Pos(1) && Span("a") && .> a && Span("b") && .> b && Span("c") && .> c
+   pattern := Pos(1) || Span("a") || .> a || Span("b") || .> b || 
+         Span("c") || .> c
    while write(line := read()) do {
-      if(line ?? p) then {
+      if(line ?? pattern) then {
          if (a - 1 == b - a & a - 1 == c - b) then write(" accepted")
          else write(" rejected")
       }
    }
 end
 \end{verbatim}
-This example defines a pattern that defines the cursor location of for the end of a, b and c respectively.  Then tests those values to see if they mathematically match for the language. 
+This example defines a pattern that defines the cursor location of for the end of a, b and c respectively.  Then tests those values to see if they are a mathematical match for the language.  The grammar requires the index location assignments to be made as a concatenation to an element in the pattern.  Again the \texttt{\&\&} operator for concatenation can be hard to distinguish while reading a pattern definition.
 
 The following example uses the pattern matching environment within the string scanning environment and is able to resolve the problem with 9 lines of code.
 \begin{verbatim}
 procedure main()
-   pattern := Pos(1) && Span("a") && .> a && Span("b") && .> b && Span("c") && .> c 
+   pattern := Pos(1) || Span("a") || .> a || Span("b") || .> b ||
+         Span("c") || .> c 
    while write(line := read()) do
       line ? {
          =pattern
@@ -816,27 +850,90 @@ This example also defines a pattern that defines the cursor location of for the 
 		 & Lines & Words & Chars w/ ws & Chars wo/ ws\\
 		\hline
 		String scanning & 12 & 35 & 226 & 162 \\
-		Patterns & 9 & 56 & 269 & 183 \\
+		Gaikaiwari's Patterns & 12 & 64 & 349 & 253 \\
+		Unicon Patterns & 9 & 56 & 290 & 195 \\
 		Pattern and string scanning & 9 & 53 & 275 & 185 \\
 		\hline
 	\end{tabular}
 \end{table}
 
 \subsection{Number of times a word is used}
+To count the number of times a word is used in a block of text you need the algorithm to count every time the word is used and not when the word is a part of some other word.  Such as counting the number of times the word \texttt{the} is used, counting every \texttt{they, them, there} and so forth would not get the desired result.  So the algorithm must be refined enough to recognize the difference.
 
+The following sample code solves this problem using the string scanning environment by examining blocks of letters and testing to see if the block of text matches the testword.
 \begin{verbatim}
 procedure main(args)
-   text := "This is a test if the emergency broadcast system. It is 
-      only a test. Had this been a real emergency, there would be
-      instructions on what to do in the event of an emergency.  This 
-      is only a test."
-   word := "emergency"
-   pattern := ~&letters || word || ~&letters
+   in := open("test.txt", "r") | stop("open failed")
+   testword := read()
    count := 0
-   every text ?? pattern do count +:= 1
+   while line := read(in) do {
+      line ? {
+         while(tab(upto(&letters))) do {
+            word := tab(many(&letters))
+            if word === testword then count +:= 1
+         }
+      }
+   }
    write(count)
 end
 \end{verbatim}
+
+The following pattern matching examples show how they would appear in Gaikaiwari's and the current Unicon implementation respectively.
+\begin{verbatim}
+procedure main(args)
+   in := open("test.txt", "r") | stop("open failed")
+   word := read()
+   pattern := PNotAny(&letters) && word && PNotAny(&letters)
+   count := 0
+   every w := !in ?? pattern do count +:= 1
+   write(count)
+end
+\end{verbatim}
+
+\begin{verbatim}
+procedure main(args)
+   in := open("test.txt", "r") | stop("open failed")
+   word := read()
+   pattern := Any(~&letters) || word || Any(~&letters)
+   count := 0
+   every w := !in ?? pattern do count +:= 1
+   write(count)
+end
+\end{verbatim}
+Both are are the same solution to the problem.  There are slight gains in typing in the second is a result of not having to use the \texttt{PNotAny()} function as the same result can be achieved with the \texttt{Any()} function while using the \texttt{~} before the cset.  This also improve the readability of code.
+
+Finally, the following code resolves the problem using pattern matching from the string scanning environment.
+\begin{verbatim}
+procedure main(args)
+   in := open("test.txt", "r") | stop("open failed")
+   testword := read()
+   pattern := Arb() || Any(~&letters) || testword || Any(~&letters)
+   count := 0
+   every line := !in do {
+      line ? {
+         while =pattern do count +:= 1
+      }
+   }
+   write(count)
+end
+\end{verbatim}
+In this example the pattern begins with an \texttt{Arb()} element.  Since the pattern match is carried out in the anchored mode, matching some arbitrary junk before the word is match is necessary otherwise the matching operation will not make the match unless the word starts at the current cursor location.  This can cause the pattern match to get hung up in an endless loop.
+
+\begin{table}[ht]
+	\caption{Number of times a word occurs in a file}
+	\centering
+	\begin{tabular}{|l|l|l|l|l|}
+		\hline\hline
+		 & Lines & Words & Chars w/ ws & Chars wo/ ws\\
+		\hline
+		String scanning & 14 & 43 & 330 & 216 \\
+		Gaikaiwari's Patterns & 7 & 34 & 230 & 179 \\
+		Unicon Patterns & 7 & 34 & 224 & 173 \\
+		Pattern and string scanning & 12 & 43 & 279 & 206 \\
+		\hline
+	\end{tabular}
+\end{table}
+
 
 \section{Conclusions}
 The integration of Gaikaiwari's pattern matching environment and the Unicon string scanning environment resulted in allowing users to utilize the pattern matching facilities from a string scanning environment, utilize the string scanning functions from the pattern matching environment, reduced the pattern matching functions by removing redundant functions, and make the pattern matching lexically harmonious with the Unicon language.
@@ -846,7 +943,7 @@ For the pattern data type to be fully integrated into the Unicon Language, the s
 
 \newpage
 \appendix
-\section{\\Pattern Facilities Language Reference} \label{App:AppendixA}
+\section{\\Appendix A: Pattern Facilities Language Reference} \label{App:AppendixA}
 \subsection{Pattern Variables}
 \textbf{variable} \\
 signifies a static variable\\
