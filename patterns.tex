@@ -124,9 +124,7 @@ The pattern operators for Unicon were defined by Gaikaiwari in his Master's Thes
 		\hline
 	\end{tabular}
 \end{table}
-The Unicon operator for string concatenation was modified to recognize whether the expression contains a pattern.  Since the pattern concatenation and Unicon's string concatenation operators do not have the same order of presidents, this resulted in some changes for writing pattern definitions as 
-
-****this is where I describe the differences. ****
+The Unicon operator for string concatenation was modified to recognize whether the expression contains a pattern.  Since the pattern concatenation and Unicon's string concatenation operators do not have the same order of presidents, this resulted in a semantic change in writing pattern definitions with assignment operators.  The value assignments must be enclosed in parenthesis as shown with the following pattern deffinition: \texttt{pattern := (Len(3) => pre) $||$ Span(&digits)}.  The immediate assignment of the pattern \texttt{Len(3)} to \texttt{pre} is enclosed in parenthesis.  The cursor assignments has not changed in that it must be separated from the pattern functions and unevaluated expressions with either a concatenation or an alternation.
 
 The assignment operators was changed lexically to use the \texttt{$>$} symbol to represent an assignment within patterns.  The Immediate Assignment, Conditional Assignment and Cursor assignment are \texttt{$=>$}, \texttt{$->$} and \texttt{.$>$} respectively.
 
@@ -175,7 +173,7 @@ The table below shows the SNOBOL4 primitive functions and the new Unicon pattern
 
 
 \vspace{1 pc}
-\subsubsection{Logically Redundant Function}
+\subsubsection{Complements with functions}
 The complement operator allows the user to get the complement of a given cset, or a cset containing all the characters not included in the given cset.  Therefore the functionality of \texttt{NotAny(c)} function can be achieved by using the complement operator with a cset in the Any function as \texttt{Any($\sim$c)}.  The run time for each method is the same on average.
 
 \vspace{1 pc}
@@ -200,7 +198,7 @@ Integration of the SNOBOL4 \texttt{RPOS(n)} and \texttt{RTAB(n)} functions with 
 
 \vspace{1 pc}
 \subsubsection{Backtracking and Terminating Functions}
-Fail is a already taken as a keyword in Unicon.  Attempts to use this name created a lot problems in compiling Unicon.  Fail in Unicon means that there is not a successful result in the operation.  While performing the pattern matching operation, \texttt{FAIL} is used to signify that there is not a successful result in the current pattern element and instructs the system to backtrack and to try another alternative.  Since the function is localized to a pattern match element and is not intended for a failure of the entire operation, it makes sense to use \texttt{Back()} for the SNOBOL4 \texttt{FAIL} function.
+Fail is already taken as a keyword in Unicon.  Attempts to use this name created a lot problems in compiling Unicon.  Fail in Unicon means that there is not a successful result in the operation.  While performing the pattern matching operation, \texttt{FAIL} is used to signify that there is not a successful result in the current pattern element and instructs the system to backtrack and to try another alternative.  Since the function is localized to a pattern match element and is not intended for a failure of the entire operation, it makes sense to use \texttt{Back()} for the SNOBOL4 \texttt{FAIL} function.
 
 
 Likewise \texttt{ABORT} is a SNOBOL function that cancels the pattern matching operation, but does not halt the operation of the entire program.  \texttt{Cancel()} would be a more appropriate term for the \texttt{ABORT} function.
@@ -233,78 +231,76 @@ It was decided that integrating the pattern matching system into the Unicon stri
    }
 \end{verbatim}
 
-The tabmat operator was modified to accept pattern data types.  In the event that a pattern was its argument then it initiates a pattern match in the anchored mode, otherwise it functions normally.  This section of code identifies whether the argument is a pattern or a string and assigns its return value.
+The tabmat operator was modified to accept pattern data types.  In the event that a pattern was its argument then it initiates a pattern match in the anchored mode, otherwise it functions normally.  This section of code identifies whether the argument is a pattern or a string and assigns its return value, and performs the assignments required for the pattern match.
 
 \begin{verbatim}
-   operator{*} = tabmat(x)
-      declare {
-         int use_trap = 0;
-      }
-   /*
-    * x must be a pattern or convertible into a string.
-    */
-      if is:pattern(x) then {
-         inline {
-            use_trap = 1;
+   if is:pattern(x) then {
+      abstract {
+         return string
          }
-         abstract {
-            return string
-         }
-      } else if !cnv:string(x) then {
-         runerr(103, x)
-      } else 
-         abstract {
-            return string
-         }
-\end{verbatim}
-
-For the pattern match, the body of code had to assign the values for each of the variables required in the pattern match.  The index or cursor location had to be assigned so that the anchored pattern match would begin where the string scanning had left off.  Finally, if the pattern was successful, then it would have to suspend the matching pattern update the index or cursor locations, if it failed then it would revert to the previous index.  The following code was added to the body of the tabmat operator:
-
-\begin{verbatim}
-   /*
-    * set cursor position, and subject to match
-    */
-   oldpos = curpos = k_pos;
-   pattern_subject = StrLoc(k_subject);
-   subject_len = StrLen(k_subject);
-   pattern = (struct b_pattern *)BlkLoc(x);
-   phead = ResolvePattern(pattern);
-   /*
-    * runs a pattern match in the Anchored Mode and returns
-    * a sub-string if it succeeds.
-    */	
-   if (internal_match(pattern_subject, subject_len, pattern->stck_size,
-         phead, &start, &stop, curpos - 1, 1)){
-      /*
-       * Set new &pos.
-       */ 
-      k_pos = stop + 1;
-      EVVal(k_pos, E_Spos);	
-      oldpos = curpos;
-      curpos = k_pos;
-      /*
-       * Suspend sub-string that matches pattern.
-       */
-      suspend string(stop - start, StrLoc(k_subject)+ start);
-      pattern_subject = StrLoc(k_subject);
-      if (subject_len != StrLen(k_subject)) {
-         curpos += StrLen(k_subject) - subject_len;
+      body {
+         int oldpos;
+         int start;
+         int stop;
+         struct b_pattern *pattern = NULL;
+         tended struct b_pelem *phead = NULL; 
+         char * pattern_subject;
+         int subject_len;
+         int new_len;
+         CURTSTATE();
+         
+         /*
+          * set cursor position, and subject to match
+          */
+         oldpos = k_pos;
+         pattern_subject = StrLoc(k_subject);
          subject_len = StrLen(k_subject);
+         pattern = (struct b_pattern *)BlkD(x, Pattern);
+         phead = (struct b_pelem *)ResolvePattern(pattern);
+         
+         /*
+          * runs a pattern match in the Anchored Mode and returns
+          * a sub-string if it succeeds.
+          */
+         if (internal_match(pattern_subject, subject_len, pattern->stck_size,
+               phead, &start, &stop, k_pos - 1, 1)){
+            /*
+             * Set new &pos.
+             */ 
+            k_pos = stop + 1;
+            EVVal(k_pos, E_Spos);	
+            oldpos = k_pos;
+         
+            /*
+             * Suspend sub-string that matches pattern.
+             */
+            suspend string(stop - start, StrLoc(k_subject)+ start);
+            pattern_subject = StrLoc(k_subject);
+            if (subject_len != StrLen(k_subject)) {
+               k_pos += StrLen(k_subject) - subject_len;
+               subject_len = StrLen(k_subject);
+               }
+            }
+            
+         /*
+          * If tab is resumed, restore the old position and fail.
+          */
+         if (oldpos > StrLen(k_subject) + 1){
+            runerr(205, kywd_pos);
+            } 
+         else {
+            k_pos = oldpos;
+            EVVal(k_pos, E_Spos);
+            }
+         fail;
+         }
       }
-   }
-   /*
-    * If tab is resumed, restore the old position and fail.
-    */
-   if (oldpos > StrLen(k_subject) + 1){
-      runerr(205, kywd_pos);
-   } else {
-      k_pos = oldpos;
-      EVVal(k_pos, E_Spos);
-   }
 \end{verbatim}
+
+As shown above, the assignment of parameter values for the \texttt{internal_match} is required. The index or cursor location had to be assigned so that the anchored pattern match would begin where the string scanning had left off.  Finally, if the pattern was successful, then it would have to suspend the matching pattern update the index or cursor locations, if it failed then it would revert to the previous index.  The following code was added to the body of the tabmat operator:
 
 \subsubsection{String Scanning Functions as Unevaluated Expressions}
-In Sudarshan Gaikaiwari's implementation of SNOBOL4 patterns in Unicon, functions can be called in a pattern using the unevaluated expression notation by placing the function call in back quotes, for example: \texttt{pattern := `tab(3)`}.
+In Sudarshan Gaikaiwari's implementation of SNOBOL4 patterns in Unicon, functions can be called in a pattern using the unevaluated expression notation by placing the function call in back quotes, for example: \texttt{pattern := `tab(3)`}.  This allows the user to assign simple Unicon string scanning function calls and procedure calls in the pattern definition. 
 
 The first phase of the analysis an unevaluated expression occurs during compile time.  In this process The \texttt{emit\_code\_for\_uneval} procedure in the tree.icn file in the Unicon implementation is called and generates a list to be interpreted during runtime.
 \begin{verbatim}
@@ -333,11 +329,19 @@ The list generated with this procedure is similar to LISP in that the first elem
 procedure writes_code_for_uneval(L)
    writes(yyout, "[")
    every temp := !L\ (*L -1) do {
-      if type(temp) == "list" then writes_code_for_uneval(temp)
-	  else writes(yyout, "\"", temp,"\",")
+      if type(temp) == "list" then {
+         writes_code_for_uneval(temp)
+         } 
+      else {
+         writes(yyout, "\"", temp,"\",")
+         }
       }
-   if type(L[*L]) == "list" then writes_code_for_uneval(L[*L])
-   else writes(yyout, "\"", L[*L], "\"")
+   if type(L[*L]) == "list" then {
+      writes_code_for_uneval(L[*L])
+      }
+   else {
+      writes(yyout, "\"", L[*L], "\"")
+      }
    writes(yyout, "]")
    return
 end
@@ -351,13 +355,15 @@ procedure emit_code_for_uneval(funcname)
    List := L
    while tab(upto(&letters ++ &digits ++ '\'\"')) do {
       temp := tab(many(&letters ++ &digits ++ '\'\"'))
-         if proc(temp) then {
-            L1 := []
-            put(L1, temp)
-            put(List, L1)
-            List := L1
-            } 
-         else put(List, temp)
+      if proc(temp) then {
+         L1 := []
+         put(L1, temp)
+         put(List, L1)
+         List := L1
+         } 
+      else {
+         put(List, temp)
+         }
       }
    writes(yyout, funcname, "(")
    writes_code_for_uneval(L)
@@ -605,6 +611,11 @@ An input fragment of "\texttt{Home: (800) 555-1212x99}" should result in identif
 
 In the string scanning environment it can be achieved with the following code:
 \begin{verbatim}
+procedure digits(N)
+   if N = 0 then return ""
+   else return tab(any(&digits)) || digits(N - 1)
+end
+
 procedure main()
    line := "Uncle Sam: (800)555-1212 or uncle.sam@us.gov"
    sep := ""
@@ -614,18 +625,18 @@ procedure main()
       if line[&pos - 1] === "(" then {
          tab(&pos - 1)
          a := move(5)
-         a ? area := move(1) || tab(many(&digits)) || tab(any(')'))
+         a ? areaCode := move(1) || digits(3) || tab(any(')'))
       } else {
-         area := tab(many(&digits))
+         areaCode := digits(3)
          sep := tab(any(' -.'))
       } 
-      prefix := tab(many(&digits))
+      prefix := digits(3)
       if sep === "" then sep := tab(any(' -.'))
       else tab(any(sep))
-      number := tab(many(&digits))
+      number := digits(4)
    }
-   if *a = 5 then write(area || prefix || sep || number)
-   else write("(" || area || ")" || prefix || sep || number)
+   if *areaCode == 5 then write(areaCode || trunk || sep || number)
+   else write("(" || areaCode || ")" || trunk || sep || number)
 end
 \end{verbatim}
 In this example, the phone number is found inductively.  It starts by skipping all the text up to the point where the digits begin, then it starts extracting each section of digits.  The first being for the area code; the second for the trunk; then identifying the character for the separation between the trunk and the remainder of the number; and finally the remainder of the number.  This requires more coding than the other options described below, and will give erroneous answers if the length of the area code or trunk is not three characters in length.  A couple more lines of code and the length of each part of the phone number can be defined.
@@ -634,17 +645,34 @@ In the pattern matching environment it can be achieved with the following code:
 \begin{verbatim}
 procedure main()
    line := "Uncle Sam: (800)555-1212 or uncle.sam@us.gov"
-   threedigit := &digits || &digits || &digits
-   fourdigit := threedigit || &digits
-   area := (Any("(") || threedigit || ")" )
-   pattern := ((threedigit => areaCode) || (Any(' -.') => sep) 
-         || (threedigit => trunk) || Any(`sep`) 
-         || (fourdigit => remainder))
-      .| ((area => areaCode) || (threedigit => trunk) 
-         || (Any(' -.') => sep) || (fourdigit => remainder))
+   threedigit := PAny(&digits) && PAny(&digits) && PAny(&digits)
+   fourdigit := threedigit && PAny(&digits)
+   area := ("(" && threedigit && ")" )
+   pattern := (threedigit => areaCode && PAny(' -.') => sep
+         && threedigit => trunk && `sep`
+         && fourdigit => number)
+      .| (area => areaCode && threedigit => trunk
+         && PAny(' -.') => sep && fourdigit => number)
    line ?? pattern
-   if *areaCode == 5 then write(areaCode || trunk || sep || remainder)
-   else write("(" || areaCode || ")" || trunk || sep || remainder) 
+   if *areaCode > 3 then write(areaCode || trunk || sep || number) 
+   else write(areaCode || sep || trunk || sep || number) 
+end
+\end{verbatim}
+
+\begin{verbatim}
+procedure main()
+   line := "Uncle Sam: (800)555-1212 or uncle.sam@us.gov"
+   threedigit := Any(&digits) || Any(&digits) || Any(&digits)
+   fourdigit := threedigit || Any(&digits)
+   area := ( "(" || threedigit || ")" )
+   pattern := ((threedigit => areaCode) || (Any(' -.') => sep) 
+         || (threedigit => trunk) || `sep` 
+         || (fourdigit => number))
+      .| ((area => areaCode) || (threedigit => trunk) 
+         || (Any(' -.') => sep) || (fourdigit => number))
+   line ?? pattern
+   if *areaCode > 3 then write(areaCode || trunk || sep || number) 
+   else write(areaCode || sep || trunk || sep || number)
 end
 \end{verbatim}
 In this example, the pattern is defined near the beginning of the code and allows the phone number to be found deductively.  It is the shortest of the three examples.
@@ -654,25 +682,39 @@ When using patterns within the string scanning environment it can be achieved wi
 procedure main()
    out := &output
    line := "Uncle Sam: (800)555-1212 or uncle.sam@us.gov"
-   threedigit := &digits || &digits || &digits
-   fourdigit := threedigit || &digits
-   area := (Any("(") || threedigit || ")" )
-   pattern := ((threedigit => areaCode) || (Any(' -.') => sep) 
-         || (threedigit => trunk) || Any(`sep`) 
-         || (fourdigit => remainder))
-      .| ((area => areaCode) || (threedigit => trunk) 
-         || (Any(' -.') => sep) || (fourdigit => remainder))
-   result := ""
-   line ? {
-      tab(upto(&digits))
-      if line[&pos - 1] === "(" then {
-         tab(&pos - 1)
-         result := =pattern
-      } else result := =pattern
-   }
+   threedigit := Any(&digits) || Any(&digits) || Any(&digits)
+   fourdigit := threedigit || Any(&digits)
+   area := ("(" || threedigit || ")" )
+   pattern := (Arb() || (threedigit => areaCode) || (Any(' -.') => sep) || 
+         (threedigit => trunk) || Any(`sep`) || (fourdigit => number)) 
+      .| (Arb() || (area => areaCode) || (threedigit => trunk) || 
+         (Any(' -.') => sep) || (fourdigit => number))
+   line ? =pattern 
+   if *areaCode > 3 then write(areaCode || trunk || sep || number)
+   else write(areaCode || sep || trunk || sep || number)
 end
 \end{verbatim}
 In this example the user is able to separate the phone number pattern out of the string scanning environment by defining it as a pattern and then using the tabmat function to call an anchored pattern match when it is needed.  In this option the phone number is also found deductively, allowing the user more flexibility in using the pattern and improving the readability of the string scanning function.
+
+\begin{verbatim}
+procedure digits(N)
+   if N = 0 then return ""
+   else return tab(any(&digits)) || digits(N - 1)
+end
+
+procedure main()
+   line := "Uncle Sam: (800)555-1212 or uncle.sam@us.gov"
+   area := (Any("(") || `digits(3)` || ")" )
+   pattern := (`tab(upto(&digits))` || (`digits(3)` => areaCode) || (Any(' -.') => sep) 
+         || (`digits(3)` => trunk) || Any(`sep`) 
+         || (`digits(4)` => number))
+      .| ((area => areaCode) || (`digits(3)` => trunk) 
+         || (Any(' -.') => sep) || (`digits(4)` => number))
+   line ?? pattern
+   if *areaCode == 5 then write(areaCode || trunk || sep || number)
+   else write("(" || areaCode || ")" || trunk || sep || number) 
+end
+\end{verbatim}
 
 \begin{table}[ht]
 	\caption{Decomposing phone numbers}
@@ -681,9 +723,11 @@ In this example the user is able to separate the phone number pattern out of the
 		\hline\hline
 		 & Lines & Words & Chars w/ ws & Chars wo/ ws\\
 		\hline
-		String scanning & 22 & 96 & 627 & 438 \\
-		Patterns & 14 & 94 & 619 & 478 \\
-		Pattern and string scanning & 20 & 97 & 653 & 477 \\
+		String scanning & 28 & 113 & 710 & 502 \\
+		Gaikaiwari's Patterns & 10 & 92 & 599 & 460 \\
+		Patterns & 10 & 93 & 610 & 470 \\
+		Pattern in string scanning & 11 & 99 & 627 & 501 \\
+		unevaluated & 19 & 101 & 681 & 519 \\
 		\hline
 	\end{tabular}
 \end{table}
