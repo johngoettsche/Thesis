@@ -124,9 +124,9 @@ The pattern operators for Unicon were defined by Gaikaiwari in his Master's Thes
 		\hline
 	\end{tabular}
 \end{table}
-The Unicon operator for string concatenation was modified to recognize whether the expression contains a pattern.  Since the pattern concatenation and Unicon's string concatenation operators do not have the same order of presidents, this resulted in a semantic change in writing pattern definitions with assignment operators.  The value assignments must be enclosed in parenthesis as shown with the following pattern deffinition: \texttt{pattern := (Len(3) => pre) $||$ Span(&digits)}.  The immediate assignment of the pattern \texttt{Len(3)} to \texttt{pre} is enclosed in parenthesis.  The cursor assignments has not changed in that it must be separated from the pattern functions and unevaluated expressions with either a concatenation or an alternation.
+The Unicon operator for string concatenation was modified to recognize whether the expression contains a pattern.  Since the pattern concatenation and Unicon's string concatenation operators do not have the same order of presidents, this resulted in a semantic change in writing pattern definitions with assignment operators.  The value assignments must occure at the end of a sub-pattern.  If the pattern definition has additional sub-patterns then parentheses will be required to seperate the assignment from the rest of the pattern.  For example with \texttt{pattern := (Pos(4) $||$ Len(3) => pre) $||$ Span(\&digits)}, \texttt{pre} will be defined from the sub-pattern \texttt{Pos(4) $||$ Len(3)}.  The cursor assignments has not changed in that it must be separated from the pattern functions and unevaluated expressions with either a concatenation or an alternation.
 
-The assignment operators was changed lexically to use the \texttt{$>$} symbol to represent an assignment within patterns.  The Immediate Assignment, Conditional Assignment and Cursor assignment are \texttt{$=>$}, \texttt{$->$} and \texttt{.$>$} respectively.
+The assignment operators were changed lexically to use the \texttt{$>$} symbol to represent an assignment within patterns.  The Immediate Assignment, Conditional Assignment and Cursor assignment are \texttt{$=>$}, \texttt{$->$} and \texttt{.$>$} respectively.
 
 \vspace{1 pc}
 \subsection{SNOBOL4 and Unicon pattern functions}
@@ -297,12 +297,12 @@ The tabmat operator was modified to accept pattern data types.  In the event tha
       }
 \end{verbatim}
 
-As shown above, the assignment of parameter values for the \texttt{internal_match} is required. The index or cursor location had to be assigned so that the anchored pattern match would begin where the string scanning had left off.  Finally, if the pattern was successful, then it would have to suspend the matching pattern update the index or cursor locations, if it failed then it would revert to the previous index.  The following code was added to the body of the tabmat operator:
+As shown above, the assignment of parameter values for the \texttt{internal\_match} is required. The index or cursor location had to be assigned so that the anchored pattern match would begin where the string scanning had left off.  Finally, if the pattern was successful, then it would have to suspend the matching pattern update the index or cursor locations, if it failed then it would revert to the previous index.  The following code was added to the body of the tabmat operator:
 
 \subsubsection{String Scanning Functions as Unevaluated Expressions}
 In Sudarshan Gaikaiwari's implementation of SNOBOL4 patterns in Unicon, functions can be called in a pattern using the unevaluated expression notation by placing the function call in back quotes, for example: \texttt{pattern := `tab(3)`}.  This allows the user to assign simple Unicon string scanning function calls and procedure calls in the pattern definition. 
 
-The first phase of the analysis an unevaluated expression occurs during compile time.  In this process The \texttt{emit\_code\_for\_uneval} procedure in the tree.icn file in the Unicon implementation is called and generates a list to be interpreted during runtime.
+The first phase of the analysis an unevaluated expression occurs during compile time.  In this process The \texttt{process\_uneval} procedure is called where \texttt{emit\_code\_for\_uneval} procedure is invoked to generates a list to be interpreted during runtime.  Both of these procedures are found in the tree.icn file of the Unicon implementation.
 \begin{verbatim}
 procedure emit_code_for_uneval(funcname)
    L := []
@@ -324,7 +324,7 @@ procedure emit_code_for_uneval(funcname)
    return
 end
 \end{verbatim}
-The list generated with this procedure is similar to LISP in that the first element is the function to be called and the remaining elements are the parameters.  Unfortuneately, Gaikaiwari's implementation could not handle functions calls as parameters in another function call as is common with some string scanning functions.  For example \texttt{tab(upto('e'))}.  In this example the tab function requires an integer value which is acquired by the upto function that scans a string until it reaches an 'e' character.  His procedure would generate a list \texttt{["tab", "upto", "e"]}, where upto would not be a function call, but instead treated as a string.  This procedure had to be revised to handle function calls as parameters in a function call.  It was decided that a recursive procedure generating the list for each function that is used as a parameter in the parent function.  It was implemented with the following two procedures: 
+The list generated in this process is similar to LISP in that the first element is the function to be called and the remaining elements are the parameters.  Unfortuneately, Gaikaiwari's implementation could not handle functions or procedure calls as parameters within another function or procedure call as is common with some string scanning functions.  For example \texttt{tab(upto('e'))}.  In this example the tab function requires an integer value which is acquired by the upto function that scans a string until it reaches an 'e' character.  His procedure would generate a list \texttt{["tab", "upto", "e"]}, where \texttt{upto} would not be a function call, but instead treated as a string.  This procedure had to be revised to handle function calls as parameters in a function call.  It was decided that a recursive procedure generating the list for each function that is used as a parameter in the parent function.  It was implemented with the following two procedures: 
 \begin{verbatim}
 procedure writes_code_for_uneval(L)
    writes(yyout, "[")
@@ -353,8 +353,8 @@ procedure emit_code_for_uneval(funcname)
    if \temp == "\\" then temp := "\\\\"
    put(L, \temp)
    List := L
-   while tab(upto(&letters ++ &digits ++ '\'\"')) do {
-      temp := tab(many(&letters ++ &digits ++ '\'\"'))
+   while tab(upto(&letters ++ &digits ++ '\'\"&')) do {
+      temp := tab(many(&letters ++ &digits ++ '\'\"&'))
       if proc(temp) then {
          L1 := []
          put(L1, temp)
@@ -418,6 +418,12 @@ struct b_list *ResolveList(struct b_list *lp)
                   cnv:string(elsrc->lslots[i], elsrc->lslots[i]);
                   parm = elsrc->lslots[i];
                   }
+               else if (strcspn(varname, "&") == 0) {
+                  if ( getkeyword(varname, &parm) == Failed) {
+                     VariableLookupFailed(varname);
+                     }
+                  elsrc->lslots[i] = parm;
+                  }
                else {
                   if ( getvar(varname, &parm) == Failed) {
                      VariableLookupFailed(varname);
@@ -441,9 +447,40 @@ struct b_list *ResolveList(struct b_list *lp)
    return lpdest;
    }
 \end{verbatim}
+The Unicon string scanning functions could used with a subset of the keywords that are pre-defined csets.  This implementation had to allow them to be used.  In the code above, the key word was identified by its characteristic \& at the beginning of its name.  Then the getkeyword function is called.  The following getkeyword function was added to the rmisc.r file in the runtime environment of the Unicon implementation to connect the keyword with its appropriate cset.
+\begin{verbatim}
+int getkeyword(char *s, dptr vp)
+{
+   if (strcmp(s, "&ascii") == 0) {
+      Kascii(vp);
+      return Succeeded;
+      }
+   if (strcmp(s, "&cset") == 0) {
+      Kcset(vp);
+      return Succeeded;
+      }
+   if (strcmp(s, "&digits") == 0) {
+      Kdigits(vp);
+      return Succeeded;
+      }
+   if (strcmp(s, "&lcase") == 0) {
+      Klcase(vp);
+      return Succeeded;
+      }
+   if (strcmp(s, "&letters") == 0) {
+      Kletters(vp);
+      return Succeeded;
+      }
+   if (strcmp(s, "&ucase") == 0) {
+      Kucase(vp);
+      return Succeeded;
+      }
+   return Failed;
+   }
+\end{verbatim}
 
 \subsubsection{String and Pattern Concatenation Operators}
-It was decided to have a consistent concatenation operator for string manipulation and pattern definitions.  The existing string concatenation operator accepted only strings and csets, while Pattern concatenation accepts strings, c-sets and patterns.  Also, a patterns and strings are different data types and string concatenation and pattern concatenation are handled in separate operations for these data types.  Therefore concatenation operator must identify whether a pattern is being used.  Then it has to send the appropriate data to the appropriate concatenation operation.
+It was decided to have a consistent concatenation operator for string manipulation and pattern definitions as both result in the joining of a pair of strings into a larger string.  In the case of patterns the strings may not have been defined yet.  The existing string concatenation operator accepted only strings and csets, while Pattern concatenation accepts strings, c-sets and patterns.  Also, patterns and strings are different data types and string concatenation and pattern concatenation are handled in separate operations for these data types.  Therefore concatenation operator must identify whether a pattern is being used.  Then it has to send the appropriate data to the appropriate concatenation operation.
 
 The following code identifies whether a pattern is being used with the concatenation operator.  If it is, then a pattern object will be returned; otherwise a string is returned.
 \begin{verbatim}
@@ -476,7 +513,7 @@ The following code identifies whether a pattern is being used with the concatena
       }
       
 \end{verbatim}
-If a pattern is identified in the above code, then the body of the function will know to return a pattern, and execute the following code will setup the data required for pattern concatenation and call the pattern concatenation operation:
+If a pattern is identified in the above code, then the body of the function will know to return a pattern, and execute the following code, where it will setup the data required for pattern concatenation and call the pattern concatenation operation.
 \begin{verbatim}
 body {
    if (use_trap == 1) {
@@ -593,21 +630,19 @@ For the purpose of Decomposing phone numbers in North America, each piece of exa
 \item trunk is three digits
 \item optional separator
 \item remaining four digits of the number
-\item optional separator
-\item optional extension number of an unspecified length
 \end{enumerate}
 area code, trunk, the remainder of the number.  The following example phone numbers should be recognizable:
 
 \begin{enumerate}
-\item 800-555-1212-99
-\item 800 555 1212 99
-\item 800.555.1212.99
-\item (800) 555-1212x99
-\item 1-800-555-1212\#99
-\item 1-(800) 555-1212 ext. 99
+\item 800-555-1212
+\item 800 555 1212
+\item 800.555.1212
+\item (800) 555-1212
+\item 1-800-555-1212
+\item 1-(800) 555-1212
 \end{enumerate}
 
-An input fragment of "\texttt{Home: (800) 555-1212x99}" should result in identifying the area code as \texttt{800}, the trunk as \texttt{555}, the remainder of the number as being \texttt{1212} and the extension being \texttt{99}.
+An input fragment of "\texttt{Home: (800) 555-1212}" should result in identifying the area code as \texttt{800}, the trunk as \texttt{555}, the remainder of the number as being \texttt{1212}.
 
 In the string scanning environment it can be achieved with the following code:
 \begin{verbatim}
@@ -641,7 +676,7 @@ end
 \end{verbatim}
 In this example, the phone number is found inductively.  It starts by skipping all the text up to the point where the digits begin, then it starts extracting each section of digits.  The first being for the area code; the second for the trunk; then identifying the character for the separation between the trunk and the remainder of the number; and finally the remainder of the number.  This requires more coding than the other options described below, and will give erroneous answers if the length of the area code or trunk is not three characters in length.  A couple more lines of code and the length of each part of the phone number can be defined.
 
-In the pattern matching environment it can be achieved with the following code:
+In the pattern matching environment as implemented by Gaikaiwari, the problem can be resolved with the following code:
 \begin{verbatim}
 procedure main()
    line := "Uncle Sam: (800)555-1212 or uncle.sam@us.gov"
@@ -659,6 +694,7 @@ procedure main()
 end
 \end{verbatim}
 
+In this implementation of patterns the code would be as follows:
 \begin{verbatim}
 procedure main()
    line := "Uncle Sam: (800)555-1212 or uncle.sam@us.gov"
@@ -675,7 +711,7 @@ procedure main()
    else write(areaCode || sep || trunk || sep || number)
 end
 \end{verbatim}
-In this example, the pattern is defined near the beginning of the code and allows the phone number to be found deductively.  It is the shortest of the three examples.
+In both of the pattern matching examples, the pattern is defined near the beginning of the code and allows the phone number to be found deductively. Although there is greater use of the parentheses for the assignment notation, it is lexically more consistent with Unicon and easier to read as a result.  
 
 When using patterns within the string scanning environment it can be achieved with the following code:
 \begin{verbatim}
@@ -697,6 +733,7 @@ end
 In this example the user is able to separate the phone number pattern out of the string scanning environment by defining it as a pattern and then using the tabmat function to call an anchored pattern match when it is needed.  In this option the phone number is also found deductively, allowing the user more flexibility in using the pattern and improving the readability of the string scanning function.
 
 \begin{verbatim}
+*** still looking for a functioning example ***
 procedure digits(N)
    if N = 0 then return ""
    else return tab(any(&digits)) || digits(N - 1)
@@ -727,7 +764,7 @@ end
 		Gaikaiwari's Patterns & 10 & 92 & 599 & 460 \\
 		Patterns & 10 & 93 & 610 & 470 \\
 		Pattern in string scanning & 11 & 99 & 627 & 501 \\
-		unevaluated & 19 & 101 & 681 & 519 \\
+		Unevaluated expression & 19 & 101 & 681 & 519 \\
 		\hline
 	\end{tabular}
 \end{table}
@@ -786,7 +823,7 @@ end
 \end{verbatim}
 In both cases the code is much shorter than the string scanning example.  This integration of Unicon patterns are simpler to read in part because the each concatenated pattern element is lexically identifiable with the \texttt{$||$} and the order of operations require the assignments and alternations to be defined within parentheses.  While in the Gaikaiwari patterns the aesthetic similarity of \texttt{\$\$} for concatenation and \texttt{\&\&} for immediate assignment can make them difficult to differentiate in complex patterns. 
 
-In this example the string scanning environment is initialized to identify each word, then each word is tested for any double letters, using a pattern sequence which is simpler that the one used in the previous example.
+In the following example the string scanning environment is initialized to identify each word, then each word is tested for any double letters, using a pattern sequence which is simpler than the combination of a while loop with a comparison as shown in the first example for this problem.
 \begin{verbatim}
 procedure main()
    in := open("mtent12.txt", "r") | stop("open failed")
@@ -803,6 +840,7 @@ procedure main()
 end 
 \end{verbatim}
 
+
 \begin{table}[ht]
 	\caption{Detecting words with double letters}
 	\centering
@@ -817,6 +855,7 @@ end
 		\hline
 	\end{tabular}
 \end{table}
+The pattern examples had the fewest number of lines, words and characters used.  When a pattern match was performed using the tabmat operator in the string scanning environment, it was easier to read and resulted in using fewer lines, words and characters as compared with using the string scanning environment alone.  For novice users of Unicon, this last example would be the easiest to understand.
 
 \subsection{Strings of the form \emph{$A^nB^nC^n$}}
 The third benchmark problem is the common language that cannot be parsed by a CFG grammar as was shown in \cite{Gaikaiwari2005}.  The programs return " accepted" when the string of characters containing "a"s, "b"s and "c"s is in the form of $a^nb^nc^n$ and return " rejected" when any other string is provided.
@@ -897,6 +936,7 @@ This example also defines a pattern that defines the cursor location of for the 
 		Gaikaiwari's Patterns & 12 & 64 & 349 & 253 \\
 		Unicon Patterns & 9 & 56 & 290 & 195 \\
 		Pattern and string scanning & 9 & 53 & 275 & 185 \\
+		Unevaluated expression & 19 & 101 & 681 & 519 \\
 		\hline
 	\end{tabular}
 \end{table}
@@ -974,16 +1014,28 @@ In this example the pattern begins with an \texttt{Arb()} element.  Since the pa
 		Gaikaiwari's Patterns & 7 & 34 & 230 & 179 \\
 		Unicon Patterns & 7 & 34 & 224 & 173 \\
 		Pattern and string scanning & 12 & 43 & 279 & 206 \\
+		Unevaluated expression & 19 & 101 & 681 & 519 \\
 		\hline
 	\end{tabular}
 \end{table}
 
 
 \section{Conclusions}
-The integration of Gaikaiwari's pattern matching environment and the Unicon string scanning environment resulted in allowing users to utilize the pattern matching facilities from a string scanning environment, utilize the string scanning functions from the pattern matching environment, reduced the pattern matching functions by removing redundant functions, and make the pattern matching lexically harmonious with the Unicon language.
+The integration of Gaikaiwari's pattern matching environment and the Unicon string scanning environment resulted in allowing users to utilize the pattern matching facilities from a string scanning environment, utilize the string scanning functions from the pattern matching environment, reduced the pattern matching functions by removing redundant functions, and made the pattern matching lexically harmonious with the Unicon language.
+
+In each of the benchmark problems it was shown that this implementation of pattern matching in Unicon was easier to read than the previous implementation of pattern matching.  Clarity was improved with a lexically consistent pattern concatenation operator, lexically consistent lexemes for the pattern assignment operators and more concise lexemes for the pattern functions.  Using patterns within the string scanning environment resulted in code that was much easier to understand.
+
+The pattern examples for each of the benchmark problems resulted in the shortest most concise code for the problem.  This implementation of patterns did not produce significantly improved code lengths as compared to Gaikaiwari's implementation, but it still produced a significant improvement over the string scanning environment of Unicon.
+
+Overall this implementation of pattern matching in how it was integrated with the current string scanning environment is an improvement over Gaikaiwari's implementation, as it is more consistent lexically with the Unicon language.  Also, implementing patterns with Unicon improves the functionality of the language by allowing the user to solve complex string analysis problems with more options and less code than the current string scanning environment alone.
 
 \section{Future Work}
-For the pattern data type to be fully integrated into the Unicon Language, the string scanning functions need to be integrated into the pattern data type and pattern matching operation.  
+Although the pattern matching and string scanning have been integrated, there are areas that need improvement.  Currently the string scanning functions can be called using the unevaluated expression, ideally they should be called in the same manner as pattern matching calls.  To achieve this a restructuring of the two systems where they are using the same set of string analysis functions.  A pattern matches are performed deductively where the pattern is pre-defined while the string scanning is performed inductively with each function is used consecutively.
+
+It does not appear that nested pattern calls are currently supported.
+
+Regular expressions
+
 
 \newpage
 \appendix
