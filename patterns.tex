@@ -35,7 +35,7 @@ within string scanning}
 \maketitle
 
 \begin{abstract}
-A SNOBOL4 like pattern data type and pattern matching operation were introduced to the Unicon language in 2005, but patterns were not integrated with the Unicon string scanning control structure at that time.  The goal of this project is to make the pattern data type accessible to the Unicon string scanning and vice versa.  Also make the pattern operators and functions lexically consistent with Unicon.  To accomplish these goals, a Unicon tabmat operator was changed to allow the execution of a pattern match in the anchored mode, pattern matching unevaluated expressions were revised to handle complex string scanning functions, and the pattern matching lexeme was revised to be more consistent with the Unicon language.
+A SNOBOL4 like pattern data type and pattern matching operation were introduced to the Unicon language in 2005, but patterns were not integrated with the Unicon string scanning control structure at that time.  The goal of this project is to make the pattern data type accessible to the Unicon string scanning and vice versa; and also make the pattern operators and functions lexically consistent with Unicon.  To accomplish these goals, a Unicon tabmat operator was changed to allow the execution of a pattern match in the anchored mode, pattern matching unevaluated expressions were revised to handle complex string scanning functions, and the pattern matching lexeme was revised to be more consistent with the Unicon language.
 
 \end{abstract}
 
@@ -45,9 +45,9 @@ A SNOBOL4 like pattern data type and pattern matching operation were introduced 
 
 \pagebreak
 \section{Introduction}
-In order to enhance programmers' productivity in analyzing strings, many different string scanning and pattern matching systems have been developed.  Modern highlevel languages tend to offer regular expressions and context free grammars for their string processing.  Analysis of strings often requires functionality beyond what these classes of languages offer.  SNOBOL4 was the most successful of the early string processing languages. \cite{Snobol, Gaikaiwari2005}  A pattern data type was employed in SNOBOL4 along with pattern operators and functions to perform the analysis.
+In order to enhance programmers' productivity in analyzing strings, many different string scanning and pattern matching systems have been developed.  Modern high level languages tend to offer regular expressions and context free grammars for their string processing.  Analysis of strings often requires functionality beyond what these classes of languages offer.  SNOBOL4 was the most successful of the early string processing languages. \cite{Snobol, Gaikaiwari2005}  A pattern data type was employed in SNOBOL4 along with pattern operators and functions to perform the analysis.
 
-A successor to SNOBOL4 was Icon, which expanded upon the goal directed evaluation with generators and backtracking that was implicit in SNOBOL4's pattern matching.\cite{GriswoldIcon, Gaikaiwari2005}  It uses a string scanning control structure that passes through the subject string with a set of commands to manipulate and analyze its contents.  Many of the Unicon string scanning functions resemble SNOBOL4 patterns, but they are different in both how they are processed as well as their functionality.  Many Icon programmers have expressed a desire for the functionality of SNOBOL4 patterns.\cite{Griswold1980}.
+Icon is a successor to SNOBOL4, which expanded upon the goal directed evaluation with generators and backtracking that was implicit in SNOBOL4's pattern matching.\cite{GriswoldIcon, Gaikaiwari2005}  It uses a string scanning control structure that passes through the subject string with a set of commands to manipulate and analyze its contents.  Many of the Unicon string scanning functions resemble SNOBOL4 patterns, but they are different in both how they are processed as well as their functionality.  Many Icon programmers have expressed a desire for the functionality of SNOBOL4 patterns.\cite{Griswold1980}.
 
 When Unicon was developed, its core elements came directly from Icon, including its string scanning facilities.\cite{JefferyUnicon}  While SNOBOL patterns are instances of a structured data type that are used deductively to test whether the pattern exists within a subject string, the string scanning environment uses a set of functions to inductively analyze or extract data from the subject string.  Patterns are pre-defined and applied later, while string scanning is performed as string scanning functions are executed.  Patterns allow composition and re-use in more flexible ways than is the case for code, which only has procedure and co-expression granularity.
 
@@ -56,12 +56,12 @@ This paper briefly explores the background of SNOBOL4 patterns and Unicon string
 \section{Background}
 SNOBOL was developed by David Farber, Ralph Griswold and Ivan Polonsky at Bell Telephone Laboratories in 1962.  SNOBOL4 was developed in 1967 and had many of the features that are included in popular dynamic programming languages including dynamic typing, eval and garbage collection.  Its pattern data type was its most important contribution to string processing.  Patterns could be as simple as a single character or a set of characters in a particular order, or they could be a complex arrangement with alternative character sets and pattern functions.  The pattern data type enabled the user to define and store patterns as variables to be used later when they were desired.\cite{Snobol}  
 
-One of the developers of SNOBOL4, Ralph Griswold, went to the University of Arizona and developed the Icon programming language which was more readable and simpler to use.\cite{JefferyUnicon}  Griswold used his experience with SNOBOL4's generators and backtracking in its pattern matching to develop and implement goal directed evaluation.\cite{Gaikaiwari2005}  SNOBOL4 patterns were not incorporated in Icon.  Instead Griswold developed an extensive string scanning system where a variety of functions and operations are executed in order to analyze and manipulate a subject string as a cursor advances through the subject string.  Unlike most other languages, Icon considers the string as a data type in its own right, rather than an array of characters. \cite{GriswoldIcon}  
+One of the developers of SNOBOL4, Ralph Griswold, went to the University of Arizona and developed the Icon programming language which was more readable and simpler to use.\cite{JefferyUnicon}  Griswold used his experience with SNOBOL4's generators and backtracking in its pattern matching to develop and implement goal directed evaluation.\cite{Gaikaiwari2005}  SNOBOL4 patterns were not incorporated in Icon.  Instead Griswold developed an extensive string scanning system where a variety of functions and operations are executed in order to analyze and manipulate a subject string as the cursor location advances through said string.  Unlike most other languages, Icon considers the string as a primitive data type in its own right, rather than an array of characters. \cite{GriswoldIcon}  
 
 Using the same Icon source code, Unicon was developed to include modern software features such as objects, networks and databases. \cite{JefferyUnicon} The string scanning control structure of Icon is a part of the Unicon programming language, yet the desire of researchers and developers for SNOBOL4's pattern data structure and pattern matching environment has persisted.  Sudarshan Gaikaiwari adopted SNOBOL4 patterns to the Unicon language for his master's thesis in 2005.  In his thesis, he added the pattern data type, and provided pattern matching functions and operators to execute the pattern searches.\cite{Gaikaiwari2005}  The pattern data type was kept separate from the string scanning environment, which may not execute pattern matching operations.  This paper refines Gaikaiwari's work to be more naturally incorporated in the Unicon language, allowing string scanning environments to utilize the pattern matching functionality and vice-versa.
 
 \section{Design Considerations}
-To integrate pattern matching with Unicon string scanning required consideration of how a user would execute a pattern match in the string scanning environment and a string scanning functions in the pattern matching operation.  What parameters are necessary for their execution given the environment from which they are being called and how they are going to be utilized and under what conditions for each implementation.  The pattern functions and operators will have to be consistent lexically and functionally with the Unicon language.
+To integrate pattern matching with Unicon string scanning required consideration of how a user would execute a pattern match in the string scanning environment and a string scanning functions in the pattern matching operation.  Such as, what parameters are necessary for their execution?  What environment from which they are being called?  And how they are going to be utilized and under what conditions for each implementation?  Also, the pattern functions and operators will have to be consistent lexically and functionally with the Unicon language.
 
 \subsection{Pattern matching statements}
 SNOBOL pattern matching can be executed in either anchored or non-anchored mode.  The anchored mode requires the match to start on the first character of the subject string while in the non-anchored mode the match can start at any location in the subject string.\cite{Snobol}  The pattern matching operation adapted by Gaikaiwari are generators and operate in the non-anchored mode.\cite{Gaikaiwari2005}  They only produce one value at a time, but since they suspend instead of return that value, the cursor position is stored so the next pattern can be applied to the remainder of the string to produce the next value. \cite{JefferyUnicon}
@@ -91,20 +91,21 @@ is a better match to Unicon lexically and syntactically, and is easier to read t
 
 To integrate pattern matching into the Unicon language, it is necessary to consider which mode is appropriate considering the current environment.  If it is being executed outside of a Unicon string scanning environment, the cursor position or index of the string has not been established.  Therefore the non-anchored mode would be appropriate for basic pattern matching operations.  This allows the a pattern to be matched anywhere within the subject string.  
 
-In the anchored mode the pattern match begins at the current cursor or index location, if the pattern fails at the first character then the entire pattern will fail to match and will not look for an alternate match later in the subject string.  Sometimes the user wishes to start the pattern match at the first location in the subject string, as though it was in the anchored mode.  In these situations the pattern can be defined with \texttt{Pos(1)} as the first element in the pattern definition, will have the desired effect.
+In the anchored mode the pattern match begins at the current cursor or index location, if the pattern fails at the first character then the entire pattern will fail to match and will not look for an alternate match later in the subject string.  Sometimes the user wishes to start the pattern match at the first location in the subject string, as though it was in the anchored mode.  In these situations, defining the pattern with the first element as \texttt{Pos(1)}, has the desired effect.
 
 \subsubsection{Pattern matching within String Scanning}
-In the Unicon string scanning environment the functions operate in relation to the cursor position of the subject string.  It is an inductive process where the data is analyzed by injecting the functions into the subject string.  The cursor location or index is adjusted depending on the success or failure of each expression.  When executing pattern matching from within a Unicon string scanning environment, the cursor or index location is established.  Therefore, in order to maintain this indexing process in the string scanning environment, it was decided to execute the pattern matching operation in the anchored mode.  
+In the Unicon string scanning environment the functions operate in relation to the cursor position of the subject string.  It is an inductive process where the data is analysed by injecting the functions into the subject string.  The cursor location or index is adjusted depending on the success or failure of each expression.  When executing pattern matching from within a Unicon string scanning environment, the cursor or index location is established.  Therefore, in order to maintain this indexing process in the string scanning environment, it was decided to execute the pattern matching operation in the anchored mode.  
 
-Unicon's \texttt{?} operator sets the cursor location to the first position in the subject string and the function or the block of functions that are called in the expression are executed.  Scanning functions normally move the cursor upon success, for this reason, it was decided, in the event that a pattern is encountered with the tabmat \texttt{=} operator, the pattern match is performed in the anchored mode, with the cursor being advanced to the end of the matching pattern if there is success.
+Unicon's \texttt{?} operator sets the cursor location to the first position in the subject string and the function or the block of functions that are called in the expression are executed.  Scanning functions normally move the cursor upon success, for this reason, it was decided, in the event that a pattern is encountered with the tabmat \texttt{=} operator, the pattern match is performed in the anchored mode, with the cursor being advanced to the end of the matching pattern if there is success. 
 
 \subsubsection{String Scanning within Patterns}
 Patterns are pre-defined and are used deductively to search a subject string for the pattern.  A regular pattern match is performed in the un-anchored mode and establishes the cursor locations for the beginning and end of a pattern when it is found.  This is done by iterating through the subject string until a match is found.  It is possible for a string scanning function to be performed as the the pattern matching process iterates through the cursor or index locations.
 
-According Gaikaiwari's thesis, his pattern matching environment allows simple single depth function calls to be made with an unevaluated expression.  His unevaluated expressions can handle function call such as \texttt{`foo(2 , "bar")} but can not handle function calls from within function calls like \texttt{tab(upto(somecset))}.\cite{Gaikaiwari2005}  Therefore revising the unevaluated expressions to handle more complex functions calls which are common when performing string scanning operations.
+Gaikaiwari's pattern matching facilities allow simple single depth function calls to be made with an unevaluated expression.  His unevaluated expressions can handle function calls such as \texttt{`foo(2 , "bar")`} but can not handle function calls from within function calls like \texttt{tab(upto(somecset))}.\cite{Gaikaiwari2005}  Therefore the unevaluated expressions needed to be revised to handle more complex functions calls which are common when performing string scanning operations.
 
+In the string scanning environment each expression is executed individually if it succeeds, the index or cursor location is adjusted.  Therefore if an pattern match is called using the tabmat \texttt{=} operator, the cursor location is adjusted if it succeeds even if it is part of a combined expression such as \texttt{=p \& x()} where \texttt{x()} fails.
 \subsection{SNOBOL4 and Unicon pattern operators}
-The pattern operators for Unicon were defined by Gaikaiwari in his Master's Thesis.  Although they are lexically different, they are functionally identical to SNOBOL4 pattern operators.  Gaikaiwari's operators for concatenation and alternation are lexically different from Unicon concatenation and alternation and the assignment operators are lexically inconsistent.  
+The pattern operators for Unicon were defined by Gaikaiwari in his Master's Thesis.  Although they are lexically different, they are functionally identical to SNOBOL4 pattern operators.  The pattern concatenation operator is similar to the string concatenation operator in that it has the result of joining two strings.  But, in the case of string concatenation, the two strings are known, while with the pattern concatenation the two strings will not be determined until the program is run.  Therefore pattern concatenation is equivalent to saying this pattern followed by this other pattern.  Conceptually, string concatenation is concrete while pattern concatenation is more abstract as the operands are not yet resolved.  
 
 \begin{table}[ht]
 	\caption{Pattern Operators}
@@ -124,13 +125,13 @@ The pattern operators for Unicon were defined by Gaikaiwari in his Master's Thes
 		\hline
 	\end{tabular}
 \end{table}
-The Unicon operator for string concatenation was modified to recognize whether the expression contains a pattern.  Since the pattern concatenation and Unicon's string concatenation operators do not have the same order of presidents, this resulted in a semantic change in writing pattern definitions with assignment operators.  The value assignments must occure at the end of a sub-pattern.  If the pattern definition has additional sub-patterns then parentheses will be required to seperate the assignment from the rest of the pattern.  For example with \texttt{pattern := (Pos(4) $||$ Len(3) => pre) $||$ Span(\&digits)}, \texttt{pre} will be defined from the sub-pattern \texttt{Pos(4) $||$ Len(3)}.  The cursor assignments has not changed in that it must be separated from the pattern functions and unevaluated expressions with either a concatenation or an alternation.
+The Unicon operator for string concatenation was modified to recognize whether the expression contains a pattern.  Since the pattern concatenation and Unicon's string concatenation operators do not have the same order of precedents, this resulted in a semantic change in writing pattern definitions with assignment operators.  The value assignments must occure at the end of a sub-pattern.  If the pattern definition has additional sub-patterns then parentheses will be required to seperate the assignment from the rest of the pattern.  For example with \texttt{pattern := (Pos(4) $||$ Len(3) => pre) $||$ Span(\&digits)}, \texttt{pre} will be defined from the sub-pattern \texttt{Pos(4) $||$ Len(3)}.  The cursor assignments have not changed in that they must be separated from the pattern functions and unevaluated expressions with either a concatenation or an alternation.
 
 The assignment operators were changed lexically to use the \texttt{$>$} symbol to represent an assignment within patterns.  The Immediate Assignment, Conditional Assignment and Cursor assignment are \texttt{$=>$}, \texttt{$->$} and \texttt{.$>$} respectively.
 
 \vspace{1 pc}
 \subsection{SNOBOL4 and Unicon pattern functions}
-Since the demand for SNOBOL4 patterns to be added to Unicon is comming from SNOBOL4 users, it is important that the Unicon pattern functions appear lexically similar to SNOBOL4 pattern functions as possible, while being lexically consistant with Unicon.  Gaikaiwari's pattern functions 
+Since the demand for SNOBOL4 patterns to be added to Unicon is coming from SNOBOL4 users, it is important that the Unicon pattern functions appear as similar to SNOBOL4 pattern functions as possible, while being lexically consistent with Unicon.  Gaikaiwari's pattern functions 
 are functionally the same as SNOBOL4 patterns, but appear somewhat disconnected from Unicon lexically.  The way in which Unicon handles its csets and strings makes some functions redundant or inconsistent with Unicon, therefore some of the pattern functions will be removed. 
 
 The table below shows the SNOBOL4 primitive functions and the new Unicon pattern functions.  In most cases, the function is lexically similar to SNOBOL4 with the first character being capitalized and the following letters in lower-case, with exceptions for FAIL and ABORT.  Other changes are described in the example uses of the functions below: 
@@ -214,13 +215,7 @@ To implement these changes the following changes to the Unicon language had to b
 \end{itemize}
 
 \subsection{Pattern matching statements}
-The non-anchored pattern matching operation was implemented by Sudarshan Gaikaiwari in his 2005 Master's thesis at New Mexico State University.  A non-anchored pattern matching expression consists of a subject followed by the comparison operator \texttt{??} followed by a pattern and appears as follows:
-
-\begin{verbatim}
-   subject ?? pattern
-\end{verbatim}
-
-The anchored pattern matching operation was defined in the pattern resources as a part of the internal match function, but the Anchored\_Mode identifier was set to false.  The default location of the index was set to 1.  The arguments for the internal match were changed so the mode would be passed in along with the current index.  This allows the internal match to be called and initiated in the proper location of the subject string.
+The pattern matching operation as implemented by Sudarshan Gaikaiwari in his 2005 Masters's thesis at New Mexico State University, was set be performed in the non-anchored mode by default.  Although the anchored pattern matching operation was defined in the pattern resources as a part of the internal match function, but the Anchored\_Mode identifier was set to false.  The default location of the index was set to 1.  The arguments for the internal match were changed so the mode would be passed in along with the current index.  This allows the internal match to be called and initiated in the proper location of the subject string.
 
 \subsubsection{Anchored mode from string scanning}
 It was decided that integrating the pattern matching system into the Unicon string scanning environment would require the pattern matching be performed in the anchored mode, since the string scanning functions are dependent upon the index or cursor position.  For this implementation the Unicon tabmat operator \texttt{=} was determined to be an ideal choice for initiating a pattern match in the string scanning environment.  The use of an equals \texttt{=} before a pattern variable triggers the anchored mode pattern matching operation.
@@ -297,12 +292,12 @@ The tabmat operator was modified to accept pattern data types.  In the event tha
       }
 \end{verbatim}
 
-As shown above, the assignment of parameter values for the \texttt{internal\_match} is required. The index or cursor location had to be assigned so that the anchored pattern match would begin where the string scanning had left off.  Finally, if the pattern was successful, then it would have to suspend the matching pattern update the index or cursor locations, if it failed then it would revert to the previous index.  The following code was added to the body of the tabmat operator:
+As shown above, the assignment of parameter values for the \texttt{internal\_match} is required. The index or cursor location had to be assigned so that the anchored pattern match would begin where the string scanning had left off.  Finally, if the pattern was successful, then it would have to suspend the matching pattern and update the index or cursor location.  If it failed then it would revert to the previous index or cursor location.  
 
 \subsubsection{String Scanning Functions as Unevaluated Expressions}
 In Sudarshan Gaikaiwari's implementation of SNOBOL4 patterns in Unicon, functions can be called in a pattern using the unevaluated expression notation by placing the function call in back quotes, for example: \texttt{pattern := `tab(3)`}.  This allows the user to assign simple Unicon string scanning function calls and procedure calls in the pattern definition. 
 
-The first phase of the analysis an unevaluated expression occurs during compile time.  In this process The \texttt{process\_uneval} procedure is called where \texttt{emit\_code\_for\_uneval} procedure is invoked to generates a list to be interpreted during runtime.  Both of these procedures are found in the tree.icn file of the Unicon implementation.
+The first phase of the analysis of an unevaluated expression occurs during compile time.  In this process, the \texttt{process\_uneval()} procedure is called where \texttt{emit\_code\_for\_uneval()} procedure is invoked to generates a list to be interpreted during runtime.  Both of these procedures are found in the tree.icn file of the Unicon implementation.
 \begin{verbatim}
 procedure emit_code_for_uneval(funcname)
    L := []
@@ -324,47 +319,49 @@ procedure emit_code_for_uneval(funcname)
    return
 end
 \end{verbatim}
-The list generated in this process is similar to LISP in that the first element is the function to be called and the remaining elements are the parameters.  Unfortuneately, Gaikaiwari's implementation could not handle functions or procedure calls as parameters within another function or procedure call as is common with some string scanning functions.  For example \texttt{tab(upto('e'))}.  In this example the tab function requires an integer value which is acquired by the upto function that scans a string until it reaches an 'e' character.  His procedure would generate a list \texttt{["tab", "upto", "e"]}, where \texttt{upto} would not be a function call, but instead treated as a string.  This procedure had to be revised to handle function calls as parameters in a function call.  It was decided that a recursive procedure generating the list for each function that is used as a parameter in the parent function.  It was implemented with the following two procedures: 
+The list generated in this process is similar to LISP in that the first element is the function to be called and the remaining elements are the parameters.  Unfortuneately, Gaikaiwari's implementation could not handle functions or procedure calls as parameters within another function or procedure call as is common with some string scanning functions.  For example \texttt{tab(upto('e'))}.  In this example the tab function requires an integer value which is acquired by the upto function that scans a string until it reaches an 'e' character.  His procedure would generate a list \texttt{["tab", "upto", "e"]}, where \texttt{upto} would not be a function call, but instead treated as a string.  This procedure had to be revised to handle function calls as parameters in a function call.  To navigate nested function calls, a recursive procedure generating the list for each function that is used as a parameter in the parent function.  It was implemented with the following two procedures: 
 \begin{verbatim}
 procedure writes_code_for_uneval(L)
+local i
    writes(yyout, "[")
-   every temp := !L\ (*L -1) do {
+   every temp := L[i := 1 to *L] do {
       if type(temp) == "list" then {
          writes_code_for_uneval(temp)
          } 
       else {
-         writes(yyout, "\"", temp,"\",")
+         writes(yyout, image(temp))
+         if i < *L then writes(yyout, ",")
          }
-      }
-   if type(L[*L]) == "list" then {
-      writes_code_for_uneval(L[*L])
-      }
-   else {
-      writes(yyout, "\"", L[*L], "\"")
       }
    writes(yyout, "]")
    return
 end
 
-procedure emit_code_for_uneval(funcname)
-   L := []
-   tab(many("`"))
-   temp := tab(upto("(.")) 
-   if \temp == "\\" then temp := "\\\\"
-   put(L, \temp)
-   List := L
-   while tab(upto(&letters ++ &digits ++ '\'\"&')) do {
-      temp := tab(many(&letters ++ &digits ++ '\'\"&'))
+procedure make_list_for_uneval(L, word)
+   if tab(upto(word)) then {
+      temp := tab(many(word))
       if proc(temp) then {
          L1 := []
          put(L1, temp)
-         put(List, L1)
-         List := L1
-         } 
+         L1 := make_list_for_uneval(L1, word)
+         put(L, L1)
+         }
       else {
-         put(List, temp)
+         put(L, temp)
          }
       }
+   return L
+end
+
+#revised procedure
+procedure emit_code_for_uneval(funcname)
+   L := []
+   tab(many('`'))
+   temp := tab(upto('(.')) 
+   if \temp == "\\" then temp := "\\\\"
+   put(L, \temp)
+   word := &letters ++ &digits ++ '\'\"&~'
+   L := make_list_for_uneval(L, word)
    writes(yyout, funcname, "(")
    writes_code_for_uneval(L)
    writes(yyout, ")")
@@ -396,6 +393,8 @@ struct b_list *ResolveList(struct b_list *lp)
       fprintf(stdout, "Unable to find proc");
       fatalerr(0, NULL);
       }
+   eldest = (struct b_lelem *)lpdest->listhead;
+   eldest->lslots[0] = proc;
    for (; BlkType(elsrc) == T_Lelem; elsrc = (struct b_lelem *)elsrc->listnext) {
       for (i = 1; i < elsrc->nused; i++) {
          tended char * varname;
@@ -424,6 +423,9 @@ struct b_list *ResolveList(struct b_list *lp)
                      }
                   elsrc->lslots[i] = parm;
                   }
+               else if (strcspn(varname, "1234567890") == 0) {
+                  parm = elsrc->lslots[i];
+                  }
                else {
                   if ( getvar(varname, &parm) == Failed) {
                      VariableLookupFailed(varname);
@@ -442,6 +444,7 @@ struct b_list *ResolveList(struct b_list *lp)
             /* cset, integer constant, ... */
             parm = elsrc->lslots[i];
             }
+         eldest->lslots[i] = parm;
          }
       }
    return lpdest;
@@ -555,36 +558,7 @@ body {
       else {…
 \end{verbatim}
 
-\subsection{Revised Pattern Functions}
-The pattern function names have been revised to be lexically more consistent with the Unicon language by revising the function definitions file, \texttt{fdef.h}, and the patterns source file \texttt{fxpattrn.ri} in Unicon source files.  The table below condenses the Table 2 to show the SNOBOL4 pattern functions with their corresponding Unicon functions for this implementation:  
-
-\begin{table}[ht]
-		\caption{Pattern Functions}
-		\centering
-		
-		\begin{tabular}{|l|l|}
-			\hline\hline
-			SNOBOL4 & Unicon \\
-			\hline
-			LEN(n) & Len(n) \\
-			SPAN(c) & Span(c)  \\
-			BREAK(c) & Break(c) \\
-			ANY(c) and NOTANY(c) & Any(c) \\
-			TAB(n) and RTAB(n) & Tab(n) \\
-			REM & Rem() \\
-			POS(n) and RPOS(n) & Pos(n) \\
-			FAIL & Back() \\
-			FENCE & Fence() \\
-			ABORT & Cancel() \\
-			ARB & Arb() \\
-			ARBNO(p) & Arbno(p) \\
-			BAL & Bal() \\
-			\hline
-		\end{tabular}
-
-\end{table}
-
-\subsubsection{Index Related Functions}
+\subsection{Index Related Functions}
 The pattern cursor location representation in the pattern functions have been revised to match the Unicon index location of strings as shown in section 3.3.2 of this paper.  This was achieved by changing the Pos(n) function code to appear as follows:
 \begin{verbatim}
 function {1} Pos(position)
@@ -612,7 +586,7 @@ The position that is passed to the function is a \texttt{struct descrip} in the 
 The Rpos(n) and Rtab functions are now redundant, but are still available for the user who may be more comfortable with SNOBOL.  When using Rpos(n) and Rtab(n), the user has to be aware that they are based on the SNOBOL4 pattern matching cursor location system.
 
 \section{Evaluation}
-To evaluate the how successful this implementation of SNOBOL4 type patterns with Unicon's string scanning environment, a set of benchmark problems will be used to compare Gaikaiwari's pattern statements, the pattern statements in this implementation using both the anchored pattern match froom the string scanning environment and the non-anchored pattern matching environment, and equivalent Unicon string scanning functions.  The solutions for each problem will be evaluated for clarity, simplicity and functionality.  Clarity deals with the readability of the lines of code for each particular problem.  Can the user or programmer read the code without any ambiguity to what it is attempting to achieve.  Simplicity will be measured by the number of lines, words and characters required to achieve each benchmark problem.  Functionality of the example code will have to be consistent.  Each example will have to achieve the same result for each benchmark problem.  The benchmark problems are listed below:
+To evaluate the how successful this implementation of SNOBOL4 type patterns with Unicon's string scanning environment, a set of benchmark problems will be used.  They will to compare the solutions for the benchmark problems using Unicon string scanning environment, Gaikaiwari's pattern statements, current pattern statements, an anchored pattern match from the string scanning environment, and pattern definitions with unevaluated expressions with string scanning functions.  The solutions for each problem will be evaluated for clarity, simplicity and functionality.  Clarity deals with the readability of the lines of code for each particular problem.  Can the user or programmer read the code without any ambiguity to what it is attempting to achieve.  Simplicity will be measured by the number of lines, words and characters required to achieve each benchmark problem.  Functionality of the example code will have to be consistent.  Each example will have to achieve the same result for each benchmark problem.  The benchmark problems are listed below:
 
 \begin{itemize}
 \item Decomposing phone numbers
@@ -694,7 +668,7 @@ procedure main()
 end
 \end{verbatim}
 
-In this implementation of patterns the code would be as follows:
+The current implementation of patterns the code is as follows:
 \begin{verbatim}
 procedure main()
    line := "Uncle Sam: (800)555-1212 or uncle.sam@us.gov"
@@ -733,24 +707,7 @@ end
 In this example the user is able to separate the phone number pattern out of the string scanning environment by defining it as a pattern and then using the tabmat function to call an anchored pattern match when it is needed.  In this option the phone number is also found deductively, allowing the user more flexibility in using the pattern and improving the readability of the string scanning function.
 
 \begin{verbatim}
-*** still looking for a functioning example ***
-procedure digits(N)
-   if N = 0 then return ""
-   else return tab(any(&digits)) || digits(N - 1)
-end
-
-procedure main()
-   line := "Uncle Sam: (800)555-1212 or uncle.sam@us.gov"
-   area := (Any("(") || `digits(3)` || ")" )
-   pattern := (`tab(upto(&digits))` || (`digits(3)` => areaCode) || (Any(' -.') => sep) 
-         || (`digits(3)` => trunk) || Any(`sep`) 
-         || (`digits(4)` => number))
-      .| ((area => areaCode) || (`digits(3)` => trunk) 
-         || (Any(' -.') => sep) || (`digits(4)` => number))
-   line ?? pattern
-   if *areaCode == 5 then write(areaCode || trunk || sep || number)
-   else write("(" || areaCode || ")" || trunk || sep || number) 
-end
+*** STILL NEEDS A WORKING EXAMPLE ***
 \end{verbatim}
 
 \begin{table}[ht]
@@ -764,7 +721,7 @@ end
 		Gaikaiwari's Patterns & 10 & 92 & 599 & 460 \\
 		Patterns & 10 & 93 & 610 & 470 \\
 		Pattern in string scanning & 11 & 99 & 627 & 501 \\
-		Unevaluated expression & 19 & 101 & 681 & 519 \\
+		Unevaluated expression & * & * & * & * \\
 		\hline
 	\end{tabular}
 \end{table}
@@ -840,6 +797,10 @@ procedure main()
 end 
 \end{verbatim}
 
+\begin{verbatim}
+*** STILL NEEDS A WORKING EXAMPLE ***
+\end{verbatim}
+
 
 \begin{table}[ht]
 	\caption{Detecting words with double letters}
@@ -852,6 +813,7 @@ end
 		Gaikaiwari's Patterns & 6 & 34 & 245 & 205 \\
 		Unicon Patterns & 6 & 34 & 250 & 205 \\
 		Pattern and string scanning & 13 & 48 & 373 & 256 \\
+		Unevaluated expression & * & * & * & * \\
 		\hline
 	\end{tabular}
 \end{table}
@@ -908,7 +870,7 @@ procedure main()
    }
 end
 \end{verbatim}
-This example defines a pattern that defines the cursor location of for the end of a, b and c respectively.  Then tests those values to see if they are a mathematical match for the language.  The grammar requires the index location assignments to be made as a concatenation to an element in the pattern.  Again the \texttt{\&\&} operator for concatenation can be hard to distinguish while reading a pattern definition.
+This example defines a pattern that defines the cursor location of for the end of a, b and c respectively.  It then tests those values to see if they are a mathematical match for the language.  The grammar requires the index location assignments to be made as a concatenation to an element in the pattern.  Again the \texttt{\&\&} operator for concatenation can be hard to distinguish while reading a pattern definition.
 
 The following example uses the pattern matching environment within the string scanning environment and is able to resolve the problem with 9 lines of code.
 \begin{verbatim}
@@ -923,7 +885,20 @@ procedure main()
       }
 end
 \end{verbatim}
-This example also defines a pattern that defines the cursor location of for the end of a, b and c respectively.  Then tests those values to see if they mathematically match for the language.
+This example also defines a pattern that defines the cursor location of for the end of a, b and c respectively.  It then tests those values to see if they mathematically match for the language.
+
+\begin{verbatim}
+procedure main()
+   pattern := Pos(1) || `tab(many('a'))` || .> a || `tab(many('b'))` || .> b ||
+         `tab(many('c'))` || .> c
+   while write(line := read()) do {
+      if(line ?? pattern) then {
+         if (a - 1 == b - a & a - 1 == c - b) then write(" accepted")
+         else write(" rejected")
+      }
+   }
+end
+\end{verbatim}
 
 \begin{table}[ht]
 	\caption{Strings of the form \emph{$A^nB^nC^n$}}
@@ -936,25 +911,25 @@ This example also defines a pattern that defines the cursor location of for the 
 		Gaikaiwari's Patterns & 12 & 64 & 349 & 253 \\
 		Unicon Patterns & 9 & 56 & 290 & 195 \\
 		Pattern and string scanning & 9 & 53 & 275 & 185 \\
-		Unevaluated expression & 19 & 101 & 681 & 519 \\
+		Unevaluated expression & 9 & 56 & 310 & 216 \\
 		\hline
 	\end{tabular}
 \end{table}
 
 \subsection{Number of times a word is used}
-To count the number of times a word is used in a block of text you need the algorithm to count every time the word is used and not when the word is a part of some other word.  Such as counting the number of times the word \texttt{the} is used, counting every \texttt{they, them, there} and so forth would not get the desired result.  So the algorithm must be refined enough to recognize the difference.
+To count the number of times a word is used in a block of text you need the algorithm to count every time the word is used, but not when the word is a part of some other word.  Such as counting the number of times the word \texttt{the} is used, counting every \texttt{they, them, there} and so forth would not get the desired result.  So the algorithm must be refined enough to recognize the difference.
 
 The following sample code solves this problem using the string scanning environment by examining blocks of letters and testing to see if the block of text matches the testword.
 \begin{verbatim}
 procedure main(args)
    in := open("test.txt", "r") | stop("open failed")
-   testword := read()
+   word := read()
    count := 0
    while line := read(in) do {
       line ? {
          while(tab(upto(&letters))) do {
             word := tab(many(&letters))
-            if word === testword then count +:= 1
+            if word === word then count +:= 1
          }
       }
    }
@@ -990,8 +965,8 @@ Finally, the following code resolves the problem using pattern matching from the
 \begin{verbatim}
 procedure main(args)
    in := open("test.txt", "r") | stop("open failed")
-   testword := read()
-   pattern := Arb() || Any(~&letters) || testword || Any(~&letters)
+   word := read()
+   pattern := Arb() || Any(~&letters) || word || Any(~&letters)
    count := 0
    every line := !in do {
       line ? {
@@ -1001,7 +976,11 @@ procedure main(args)
    write(count)
 end
 \end{verbatim}
-In this example the pattern begins with an \texttt{Arb()} element.  Since the pattern match is carried out in the anchored mode, matching some arbitrary junk before the word is match is necessary otherwise the matching operation will not make the match unless the word starts at the current cursor location.  This can cause the pattern match to get hung up in an endless loop.
+In this example the pattern begins with an \texttt{Arb()} element.  Since the pattern match is carried out in the anchored mode, matching some arbitrary junk before the word is matched is necessary otherwise the matching operation will not make the match unless the word starts at the current cursor location.  This can cause the pattern match to get hung up in an endless loop.
+
+\begin{verbatim}
+*** STILL NEEDS A WORKING EXAMPLE ***
+\end{verbatim}
 
 \begin{table}[ht]
 	\caption{Number of times a word occurs in a file}
@@ -1010,11 +989,11 @@ In this example the pattern begins with an \texttt{Arb()} element.  Since the pa
 		\hline\hline
 		 & Lines & Words & Chars w/ ws & Chars wo/ ws\\
 		\hline
-		String scanning & 14 & 43 & 330 & 216 \\
-		Gaikaiwari's Patterns & 7 & 34 & 230 & 179 \\
-		Unicon Patterns & 7 & 34 & 224 & 173 \\
-		Pattern and string scanning & 12 & 43 & 279 & 206 \\
-		Unevaluated expression & 19 & 101 & 681 & 519 \\
+		String scanning & 14 & 43 & 309 & 208 \\
+		Gaikaiwari's Patterns & 7 & 34 & 223 & 179 \\
+		Unicon Patterns & 7 & 34 & 217 & 173 \\
+		Pattern and string scanning & 12 & 43 & 271 & 198 \\
+		Unevaluated expression & * & * & * & * \\
 		\hline
 	\end{tabular}
 \end{table}
@@ -1027,7 +1006,7 @@ In each of the benchmark problems it was shown that this implementation of patte
 
 The pattern examples for each of the benchmark problems resulted in the shortest most concise code for the problem.  This implementation of patterns did not produce significantly improved code lengths as compared to Gaikaiwari's implementation, but it still produced a significant improvement over the string scanning environment of Unicon.
 
-Overall this implementation of pattern matching in how it was integrated with the current string scanning environment is an improvement over Gaikaiwari's implementation, as it is more consistent lexically with the Unicon language.  Also, implementing patterns with Unicon improves the functionality of the language by allowing the user to solve complex string analysis problems with more options and less code than the current string scanning environment alone.
+Overall this implementation of pattern matching is an improvement over Gaikaiwari's implementation, as it is more consistent lexically with the Unicon language.  Also, implementing patterns with Unicon improves the functionality of the language by allowing the user to solve complex string analysis problems with more options and less code than the current string scanning environment alone.
 
 \section{Future Work}
 Although the pattern matching and string scanning have been integrated, there are areas that need improvement.  Currently the string scanning functions can be called using the unevaluated expression, ideally they should be called in the same manner as pattern matching calls.  To achieve this a restructuring of the two systems where they are using the same set of string analysis functions.  A pattern matches are performed deductively where the pattern is pre-defined while the string scanning is performed inductively with each function is used consecutively.
@@ -1038,9 +1017,15 @@ Regular expressions
 
 
 \newpage
-\appendix
-\section{\\Appendix A: Pattern Facilities Language Reference} \label{App:AppendixA}
-\subsection{Pattern Variables}
+  \renewcommand{\theequation}{A-\arabic{equation}}
+  % redefine the command that creates the equation no.
+  \setcounter{equation}{0}  % reset counter 
+  %\section*{APPENDIX}  % use *-form to suppress numbering
+%\appendix{Appendix A:}
+\addcontentsline{toc}{section}{Appendix A: Pattern Facilities Language Reference}
+\section*{Appendix A: Pattern Facilities Language Reference} 
+\subsection*{Pattern Variables}
+
 \textbf{variable} \\
 signifies a static variable\\
 \noindent\rule{12cm}{0.4pt}
@@ -1048,7 +1033,7 @@ signifies a static variable\\
 \noindent\textbf{`variable`} \\
 signifies an unevaluated variable in a pattern\\
 
-\subsection{Pattern Operators}
+\subsection*{Pattern Operators}
 \noindent\textbf{pattern1 $\vert\vert$	pattern2} \hfill \textbf{pattern concatenation}\\
 pattern concatenation operator produces a new pattern containing the left operand followed the right operand.\\
 \noindent\rule{12cm}{0.4pt}
@@ -1075,46 +1060,46 @@ compares the string on the left to see if there are any matches of the pattern o
 \noindent\textbf{=pattern} \hfill\textbf{comparison operator}\\
 compares the current string in the string scanning enviornment to see if there are is match of the pattern on the right in the anchored mode.\\
 
-\subsection{Pattern Built-In Functions}
+\subsection*{Pattern Built-In Functions}
 \noindent\textbf{Any(s)} \hfill\textbf{match any}\\
 matches any single character contained in s appearing in the subject string.\\
-\noindent\rule{12cm}{0.1pt}
+\noindent\rule{14cm}{0.1pt}
 
 \noindent\textbf{Arb()} \hfill\textbf{arbitrary pattern}\\
 matches zero or more characters in the subject string.\\
-\noindent\rule{12cm}{0.1pt}
+\noindent\rule{14cm}{0.1pt}
 
 \noindent\textbf{Arbno(p)} \hfill\textbf{repetitive arbitrary pattern}\\
 matches repetitive sequences of p in the subject string.\\
-\noindent\rule{12cm}{0.1pt}
-
-\noindent\textbf{Bal()} \hfill\textbf{balanced parentheses}\\
-matches the shortest non-null string which parentheses are balanced in the subject string.\\
-\noindent\rule{12cm}{0.1pt}
-
-\noindent\textbf{Break(s)} \hfill\textbf{pattern break}\\
-matches any characters in the subject string up to but not including any of the characters in s.\\
-\noindent\rule{12cm}{0.1pt}
-
-\noindent\textbf{Breakx(s)} \hfill\textbf{extended pattern break}\\
-matches any characters up to any of the subject characters in s, and will search beyond the break position for a possible larger match.\\
-\noindent\rule{12cm}{0.1pt}
-
-\noindent\textbf{Cancel()} \hfill\textbf{pattern cancel}\\
-causes an immediate failure of the entire pattern match.\\
-\noindent\rule{12cm}{0.1pt}
+\noindent\rule{14cm}{0.1pt}
 
 \noindent\textbf{Back()} \hfill\textbf{pattern back}\\
 signals a failure in the current portion of the pattern match and sends an instruction to go back and try a different alternative.\\
-\noindent\rule{12cm}{0.1pt}
+\noindent\rule{14cm}{0.1pt}
+
+\noindent\textbf{Bal()} \hfill\textbf{balanced parentheses}\\
+matches the shortest non-null string which parentheses are balanced in the subject string.\\
+\noindent\rule{14cm}{0.1pt}
+
+\noindent\textbf{Break(s)} \hfill\textbf{pattern break}\\
+matches any characters in the subject string up to but not including any of the characters in s.\\
+\noindent\rule{14cm}{0.1pt}
+
+\noindent\textbf{Breakx(s)} \hfill\textbf{extended pattern break}\\
+matches any characters up to any of the subject characters in s, and will search beyond the break position for a possible larger match.\\
+\noindent\rule{14cm}{0.1pt}
+
+\noindent\textbf{Cancel()} \hfill\textbf{pattern cancel}\\
+causes an immediate failure of the entire pattern match.\\
+\noindent\rule{14cm}{0.1pt}
 
 \noindent\textbf{Fence()} \hfill\textbf{pattern fence}\\
 signals a failure in the current portion of the pattern match if it is trying to backing up to try other alternatives.\\
-\noindent\rule{12cm}{0.1pt}
+\noindent\rule{14cm}{0.1pt}
 
 \noindent\textbf{Len(n)} \hfill\textbf{match fixed-length string}\\
 matches a string of a length of n characters in the subject string.  It fails if n is greater than the number of characters remaining in the subject string.\\
-\noindent\rule{12cm}{0.1pt}
+\noindent\rule{14cm}{0.1pt}
 
 \noindent\textbf{Pos(n)} \hfill\textbf{cursor position}\\
 sets the cursor or index position of the subject string to the position n according the Unicon index system shown bellow:
@@ -1123,19 +1108,19 @@ sets the cursor or index position of the subject string to the position n accord
                    | U | n | i | c | o | n |
                    1   2   3   4   5   6   7
 \end{verbatim}
-\noindent\rule{12cm}{0.1pt}
-
-\noindent\textbf{Tab(n)} \hfill\textbf{pattern tab}\\
-matches any characters from the current cursor or index position up to the specified position of the subject string. Tab uses the Unicon index system shown in Pos and position n must be to the right of the current position.\\
-\noindent\rule{12cm}{0.1pt}
+\noindent\rule{14cm}{0.1pt}
 
 \noindent\textbf{Rem()} \hfill\textbf{remainder pattern}\\
 matches the remainder of the subject string.\\
-\noindent\rule{12cm}{0.1pt}
+\noindent\rule{14cm}{0.1pt}
 
 \noindent\textbf{Span(s)} \hfill\textbf{pattern span}\\
 matches one or more characters from the subject string that are contained in s.  It must match at least one character.\\
-\noindent\rule{12cm}{0.1pt}
+\noindent\rule{14cm}{0.1pt}
+
+\noindent\textbf{Tab(n)} \hfill\textbf{pattern tab}\\
+matches any characters from the current cursor or index position up to the specified position of the subject string. Tab uses the Unicon index system shown in Pos and position n must be to the right of the current position.\\
+\noindent\rule{14cm}{0.1pt}
 
 \noindent\textbf{Rpos(n)} \hfill\textbf{reverse cursor position}\\
 sets the cursor or index position of the subject string to the position n according the SNOBOL4 index system shown bellow:
@@ -1144,7 +1129,7 @@ sets the cursor or index position of the subject string to the position n accord
                    | S | N | O | B | O | L |
                    1   2   3   4   5   6   7
 \end{verbatim}
-\noindent\rule{12cm}{0.1pt}
+\noindent\rule{14cm}{0.1pt}
 
 \noindent\textbf{Rtab(n)} \hfill\textbf{pattern reverse tab}\\
 matches any characters from the current cursor or index position up to the specified position of the subject string. Rtab uses the SNOBOL4 index system shown in Rpos and position n must be to the right of the current position.\\
