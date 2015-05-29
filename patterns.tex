@@ -358,6 +358,8 @@ Integration of the SNOBOL4 \texttt{RPOS(n)} and \texttt{RTAB(n)} functions with 
 
 Likewise \texttt{ABORT} is a SNOBOL function that cancels the pattern matching operation, but does not halt the operation of the entire program.  \texttt{Cancel()} is a more appropriate term for the \texttt{ABORT} function.
 
+\textbf{\subsubsection{Unevaluated Expressions}}
+
 \pagebreak
 \textbf{\section{Implementation}}
 The figure below shows the relationship of the Unicon tools for translation, compiling and execution of a Unicon program.  The front-end compiler, called unicon,  translates the unicon code into icon code\cite{JefferyImp}.  This is where the pattern definitions and their component parts are identified and converted to their respective pattern function calls for the runtime system\cite{JefferyImp}.  The function lists are generated for the unevaluated expressions.  Icont compile Icon code down to virtual machine and C code\cite{JefferyImp}.  Iconx is the Icon and Unicon virtual machine\cite{JefferyImp}, where the \texttt{pattern\_match()}, \texttt{ResolveReferences} and \texttt{ResolveList} functions are executed. 
