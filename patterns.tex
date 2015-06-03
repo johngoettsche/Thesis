@@ -27,6 +27,8 @@
 \titleformat*{\subsection}{\Large}
 \titleformat*{\subsubsection}{\Large}
 
+\usepackage{alltt}
+
 %\usepackage{tocloft}
 
 %\renewcommand\cftsecfont{\normalfont}
@@ -89,7 +91,7 @@
 	Committee Members: Robert Heckendorn, Ph.D.; Robert Rinker, 	Ph.D.\\
 	Department Administrator: Gregory Donohoe, Ph.D.\\
 	\vspace{10 pc}
-	May, 2015
+	June, 2015
 	\end{large}
 	\end{center}
 \end{titlepage}
@@ -147,6 +149,7 @@ I would like to acknowledge my major professor Clinton Jeffery who guided my res
 \begin{center}
 \textbf{Dedication}
 \end{center}
+To all my fellow Land Surveyors who have searched for or sought to develop software that is used the way surveyors actually work. 
 
 \pagebreak
 \linespread{1}
@@ -184,7 +187,6 @@ This paper briefly explores the background of SNOBOL4 patterns and Unicon string
 
 \pagebreak
 \textbf{\section{Background}}
-
 SNOBOL was developed by David Farber, Ralph Griswold and Ivan Polonsky at Bell Telephone Laboratories in 1962.  SNOBOL4 was developed in 1967 and had many of the features that are included in popular dynamic programming languages including dynamic typing, eval and garbage collection.  Its pattern data type was its most important contribution to string processing.  Patterns could be as simple as a single character or a set of characters in a particular order, or they could be a complex arrangement with alternative character sets and pattern functions.  The pattern data type enabled the user to define and store patterns in variables to be used later when they were desired\cite{Snobol}.  
 
 One of the developers of SNOBOL4, Ralph Griswold, went to the University of Arizona and developed the Icon programming language which was more readable and simpler to use\cite{JefferyUnicon}.  Griswold used his experience with SNOBOL4's generators and backtracking in its pattern matching to develop and implement goal directed evaluation\cite{Gaikaiwari2005}.  SNOBOL4 patterns were not incorporated in Icon.  Instead Griswold developed an extensive string scanning system where a variety of functions and operations are executed in order to analyze and manipulate a subject string as the cursor location advances through said string.  Unlike most other languages, Icon considers the string as a primitive data type in its own right, rather than an array of characters\cite{GriswoldIcon}.  
@@ -193,17 +195,17 @@ Using the same Icon source code, Unicon was developed to include modern software
 
 \textbf{\subsection{Pattern Matching}}
 The purpose of a pattern matching operation is to determine if the presence of a predefined pattern exists within a subject string.  The pattern matching operation is initialized in Unicon by using the \texttt{??} operator \cite{Gaikaiwari2005}.  The following expression results in the \texttt{subject} having a pattern match performed with \texttt{pattern}:\\
-\begin{verbatim}
+\begin{alltt}
         subject ?? pattern
-\end{verbatim}
+\end{alltt}
 If the pattern is found in \texttt{subject} then the expression succeeds and the first substring matching the pattern is returned; otherwise it fails.
 
 A pattern is constructed by assigning it to a series of simple pattern components and pattern operators, alternation \texttt{.|} and concatenation \texttt{||}.  An alteration operation succeeds if either of the patterns on either side of the operator is found.  A concatenation operation succeeds if the pattern on the left is immediately followed by the pattern on the right.
 
 For example, if the user wanted to define a pattern called "pat" that identifies whether "bean" or "been" as in a subject string.  The follow code would produce that result:\\
-\begin{verbatim}
+\begin{alltt}
         pat := "b" || ( "ea" .| "ee" ) || "n"
-\end{verbatim}
+\end{alltt}
 The figure below illustrates the pattern definition.
 \begin{figure}[ht!]
 \centering
@@ -236,13 +238,13 @@ The pattern matching statements in SNOBOL4 and Gaikaiwari's Unicon implementatio
 \noindent
 In both examples, the subject is scanned to see if it contains the pattern.  If it succeeds, then a substring of the subject that fits the pattern is produced.  Gaikaiwari's syntax starts the pattern matching operation with the use of the \texttt{??} operator while SNOBOL4 uses two spaces between the subject and pattern.  Since the Unicon string scanning operator is \texttt{?} and used in the following syntax:\\
 
-\begin{verbatim}
+\begin{alltt}
    subject ? expr
-\end{verbatim}
+\end{alltt}
 Gaikaiwari's operator in the following syntax:\\
-\begin{verbatim}
+\begin{alltt}
    subject ?? pattern
-\end{verbatim}
+\end{alltt}
 is a better match to Unicon lexically and syntactically, and is easier to read than separating the subject and pattern with white space.   
 
 To integrate pattern matching into the Unicon language, it is necessary to consider which mode is appropriate considering the current environment.  If it is being executed outside of a Unicon string scanning environment, the cursor position or index of the string has not been established.  Therefore the non-anchored mode is appropriate for basic pattern matching operations.  This allows a pattern to be matched anywhere within the subject string.  
@@ -257,7 +259,7 @@ Unicon's \texttt{?} operator sets the cursor location to the first position in t
 \textbf{\subsubsection{String Scanning within Patterns}}
 Patterns are pre-defined and are used deductively to search a subject string for the pattern.  A regular pattern match is performed in the un-anchored mode and establishes the cursor locations for the beginning and end of a pattern when it is found.  This is done by iterating through the subject string until a match is found.  It is possible for a string scanning function to be performed as the pattern matching process iterates through the cursor or index locations.
 
-Gaikaiwari's pattern matching facilities allow simple single depth function calls to be made with an unevaluated expression.  His unevaluated expressions can handle function calls such as \texttt{`foo(2 , "bar")`} but can not handle function calls from within function calls like \texttt{tab(upto(somecset))}\cite{Gaikaiwari2005}.  Therefore the unevaluated expressions implementation needed to be revised to handle more complex functions calls which are common when performing string scanning operations.
+Gaikaiwari's pattern matching facilities allow simple single depth function calls to be made with an unevaluated expression.  His unevaluated expressions can handle procedure calls such as \texttt{`foo(2 , "bar")`} but can not handle function calls from within function calls like \texttt{tab(upto(somecset))}\cite{Gaikaiwari2005}.  Therefore the unevaluated expressions implementation needed to be revised to handle more complex functions calls which are common when performing string scanning operations.
 
 \textbf{\subsection{SNOBOL4 and Unicon pattern operators}}
 The pattern operators for Unicon were defined by Gaikaiwari in his Master's Thesis.  Although they are lexically different, they are functionally identical to SNOBOL4 pattern operators.  The pattern concatenation operator is similar to the string concatenation operator in that it has the end result of the first pattern or string being followed by the second pattern or string.  But, they differ in that string concatenation joins two strings, while pattern concatenation finds a pattern in the subject string that is followed by the second pattern.\\
@@ -280,7 +282,7 @@ The pattern operators for Unicon were defined by Gaikaiwari in his Master's Thes
 		\hline
 	\end{tabular}
 \end{table}
-The Unicon operator for string concatenation was modified to recognize whether the expression contains a pattern.  Since the pattern concatenation and Unicon's string concatenation operators do not have the same order of precedence, this resulted in a semantic change in writing pattern definitions with assignment operators.  The value assignments must occur at the end of a sub-pattern.  If the pattern definition has additional sub-patterns then parentheses are required to separate the assignment from the rest of the pattern.  For example with \texttt{pattern := (Pos(4) $||$ Len(3) => pre) $||$ Span(\&digits)}, \texttt{pre} will be defined from the sub-pattern \texttt{Pos(4) $||$ Len(3)}.  The cursor assignments have not changed in that they must be separated from the pattern functions and unevaluated expressions with a concatenation operator.
+The Unicon operator for string concatenation was modified to recognize whether the expression contains a pattern.  Since the pattern concatenation and Unicon's string concatenation operators do not have the same order of precedence, the assignment operators' order of precedence was adjusted to maintain their semantics.  The cursor assignment has not changed in that it must be separated from the pattern functions and unevaluated expressions with a concatenation operator.
 
 The assignment operators were changed lexically to use the \texttt{>} symbol in the right position of the lexeme to represent an assignment within patterns.  This makes them more consistent lexically.  The SNOBOL4 lexemes appear almost random in their selection and Gaikaiwari's also lacked consistency. The Immediate Assignment, Conditional Assignment and Cursor assignment are \texttt{=>}, \texttt{->} and \texttt{.>} respectively.
 
@@ -336,19 +338,19 @@ The complement operator allows the user to get the complement of a given cset, o
 \textbf{\subsubsection{Index Related Functions}}
 The \texttt{POS(n)}, \texttt{RPOS(n)}, \texttt{TAB(n)} and \texttt{RTAB(n)} SNOBOL4 functions all work directly with the cursor location or index.  In Unicon the index value is the number of spaces to the right from the left end of string with the first position being 1 or starting at the right end of the string starting with zero and subtracting the number of spaces to the right end of the string\cite{JefferyUnicon}.   The illustration below demonstrates the Unicon cursor position values for the string "Unicon" with the vertical bars representing the index locations:\\
 
-\begin{verbatim}
+\begin{alltt}
                    -6  -5  -4  -3  -2  -1  0
                    | U | n | i | c | o | n |
                    1   2   3   4   5   6   7
-\end{verbatim}
+\end{alltt}
 
 The SNOBOL4 cursor locations for the \texttt{RPOS(n)} and \texttt{RTAB(n)} functions the cursor locations are as follows:\\
 
-\begin{verbatim}
+\begin{alltt}
    RPOS(n) & RTAB(n)    6   5   4   3   2   1   0
                         | S | N | O | B | O | L |
    POS(n) & TAB(n)      1   2   3   4   5   6   7
-\end{verbatim}
+\end{alltt}
 
 Integration of the SNOBOL4 \texttt{RPOS(n)} and \texttt{RTAB(n)} functions with the Unicon string indexes can be achieved with \texttt{Pos(-n)} and \texttt{Tab(-n)} functions, making \texttt{RPOS(n)} and \texttt{RTAB(n)} redundant.
 
@@ -357,8 +359,6 @@ Integration of the SNOBOL4 \texttt{RPOS(n)} and \texttt{RTAB(n)} functions with 
 \texttt{fail} is already taken as a reserved word in Unicon. In the internal C code of the implementation \texttt{Fail} is a macro.  Attempts to use this name for a built in function created a lot problems in compiling Unicon.  Fail in Unicon means that there is not a successful result in the operation.  While performing the pattern matching operation, \texttt{FAIL} is used to signify that there is not a successful result in the current pattern element and instructs the system to backtrack and to try another alternative\cite{Snobol}.  Since the function is localized to a pattern match element and is not intended for a failure of the entire operation, it makes sense to use \texttt{Back()} for the SNOBOL4 \texttt{FAIL} function.
 
 Likewise \texttt{ABORT} is a SNOBOL function that cancels the pattern matching operation, but does not halt the operation of the entire program.  \texttt{Cancel()} is a more appropriate term for the \texttt{ABORT} function.
-
-\textbf{\subsubsection{Unevaluated Expressions}}
 
 \pagebreak
 \textbf{\section{Implementation}}
@@ -387,21 +387,21 @@ The pattern matching operation \texttt{\&\&} in Gaikaiwari's 2005 Master's thesi
 \textbf{\subsubsection{Anchored mode from string scanning}}
 Integrating the pattern matching system into the Unicon string scanning environment requires that the pattern matching be performed in the anchored mode, since the string scanning functions are operate from the index or cursor position.  For this implementation the Unicon tabmat operator \texttt{=} was determined to be an ideal choice for initiating a pattern match in a string scanning environment.  The use of an equals \texttt{=} before a pattern variable triggers the anchored mode pattern matching operation.\\
  
-\begin{verbatim}
+\begin{alltt}
    subjectString ? {
       match := =pattern
    }
-\end{verbatim}
+\end{alltt}
 
 The tabmat operator was modified to accept operands of type pattern.  In the event that a pattern is its argument, tabmat initiates a pattern match in the anchored mode, otherwise it functions normally.  This section of RTL (Real Time Language) code from omisc.r in Unicon's runtime system identifies whether the argument is a pattern or a string and assigns its return value, and performs the assignments required for the pattern match.
 
-\begin{verbatim}
-operator{*} = tabmat(x)
-   if is:pattern(x) then {
-      abstract {
+\begin{alltt}
+operator\{*\} = tabmat(x)
+   if is:pattern(x) then \{
+      abstract \{
          return string
-         }
-      body {
+         \}
+      body \{
          int oldpos;
          int start;
          int stop;
@@ -427,7 +427,7 @@ operator{*} = tabmat(x)
           */
          if (internal_match(pattern_subject, subject_len, 
                pattern->stck_size, phead, &start, &stop, 
-               k_pos - 1, 1)){
+               k_pos - 1, 1))\{
             /*
              * Set new &pos.
              */ 
@@ -440,33 +440,34 @@ operator{*} = tabmat(x)
              */
             suspend string(stop - start, StrLoc(k_subject)+ start);
             pattern_subject = StrLoc(k_subject);
-            if (subject_len != StrLen(k_subject)) {
+            if (subject_len != StrLen(k_subject)) \{
                k_pos += StrLen(k_subject) - subject_len;
                subject_len = StrLen(k_subject);
-               }
-            }
+               \}
+            \}
             
          /*
           * If tab is resumed, restore the old position and fail.
           */
-         if (oldpos > StrLen(k_subject) + 1){
+         if (oldpos > StrLen(k_subject) + 1)\{
             runerr(205, kywd_pos);
-            } 
-         else {
+            \} 
+         else \{
             k_pos = oldpos;
             EVVal(k_pos, E_Spos);
-            }
+            \}
          fail;
-         }
-      }
-\end{verbatim}
+         \}
+      \}
+\end{alltt}
 
 As shown above, the tabmat operator checks to see if the parameter is a pattern.  If it is, the \texttt{k\_pos} and \texttt{k\_subject} which were assigned \texttt{\&pos} and \texttt{\&subject} respectively when \texttt{CURTSTATE()} was called.  They are converted to the approriate type so they can be passed as parameters when the \texttt{internal\_match()} function is called in the anchored mode.  The index or cursor location had to be assigned so that the anchored pattern match would begin where the string scanning had left off.  Finally, if the pattern was successful, then it would have to suspend the matching pattern and update the index or cursor location.  If it failed then it would revert to the previous index or cursor location.  
 
 \textbf{\subsubsection{String Scanning Functions as Unevaluated Expressions}}
 In Gaikaiwari's implementation of patterns, functions can be called in a pattern using the unevaluated expression notation by placing the function call in back quotes, for example: \texttt{pattern := `tab(3)`}.  This allows the user to assign simple Unicon string scanning function calls and procedure calls in the pattern definition, but only if \texttt{tab(3)} impacts on subsequent pattern match operations.
 
-The first phase of the analysis of an unevaluated expression occurs during compile time.  In this process, the \texttt{process\_uneval()} procedure calls the \texttt{emit\_code\_for\_uneval()} procedure which generates a list to be interpreted during runtime.  Both of these procedures are found in the tree.icn file of the Unicon implementation.\\
+The first phase of the analysis of an unevaluated expression occurs during compile time.  In this process, the \texttt{process\_uneval()} procedure calls the
+\newline\texttt{emit\_code\_for\_uneval()} procedure which generates a list to be interpreted during runtime.  Both of these procedures are found in the tree.icn file of the Unicon implementation.\\
 \begin{verbatim}
 procedure emit_code_for_uneval(funcname)
    L := []
@@ -493,12 +494,17 @@ The list generated in this process is similar to LISP in that the first element 
 procedure writes_code_for_uneval(L)
 local i
    writes(yyout, "[")
+   writes("[")
    every temp := L[i := 1 to *L] do {
       if type(temp) == "list" then {
          writes_code_for_uneval(temp)
          } 
       else {
          writes(yyout, image(temp))
+         if i = 1 then {
+            /list_of_invocables := []
+            put(list_of_invocables, temp)
+            }
          if i < *L then writes(yyout, ",")
          }
       }
@@ -553,16 +559,16 @@ struct b_list *ResolveList(struct b_list *lp)
    tended char *temp;
    int complement;
    struct b_cset *cp, *cpx;
+
    lpsrc = lp;
    lpdest = alclist(lpsrc->size,lpsrc->size);
-   DEBUGF(20,(stdout, "Resolving function name and parameters"));
    nargs = lpsrc->size -1;
    elsrc = (struct b_lelem *)lpsrc->listhead;
    proc.dword = D_Proc;
    /* convert string in to process and store in proc*/
    BlkLoc(proc)= (union block *)strprc(&elsrc->lslots[0],nargs);
    if (BlkLoc(proc) == NULL) {
-      fprintf(stdout, "Unable to find proc");
+      fprintf(stderr, "Unable to find proc1\n");fflush(stdout);
       fatalerr(0, NULL);
       }
    eldest = (struct b_lelem *)lpdest->listhead;
@@ -589,13 +595,12 @@ struct b_list *ResolveList(struct b_list *lp)
                   complement = 1;
                   }
                if (strcspn(varname, "\"") == 0) {
-                  /* drop the quotes, but pass string as a cset */
+                  /* drop the quotes, but pass string as a string */
                   StrLoc(elsrc->lslots[i]) = 
                         StrLoc(elsrc->lslots[i]) + 1;
                   StrLen(elsrc->lslots[i]) = 
                         StrLen(elsrc->lslots[i]) - 2;
                   cnv:string(elsrc->lslots[i], elsrc->lslots[i]);
-                  parm = elsrc->lslots[i];
                   }
                else if (strcspn(varname, "\'") == 0) { 
                   /* drop the quotes, but pass string as a cset */
@@ -604,7 +609,6 @@ struct b_list *ResolveList(struct b_list *lp)
                   StrLen(elsrc->lslots[i]) = 
                         StrLen(elsrc->lslots[i]) - 2;
                   cnv:cset(elsrc->lslots[i], elsrc->lslots[i]);
-                  parm = elsrc->lslots[i];
                   }
                else if (strcspn(varname, "&") == 0) {
                   if ( getkeyword(varname, &parm) == Failed) {
@@ -617,20 +621,19 @@ struct b_list *ResolveList(struct b_list *lp)
                            Cset);
                      for (b = 0; b < CsetSize; b++) 
                         cp->bits[b] = ~cpx->bits[b];
-                     elsrc->lslots[i].vword.bptr = (union block *)cp;
+                     elsrc->lslots[i].vword.bptr = 
+                           (union block *)cp;
                      }
-                  parm = elsrc->lslots[i];
                   }
                else if (strcspn(varname, "1234567890") == 0) {
                   cnv:integer(elsrc->lslots[i], elsrc->lslots[i]);
-                  parm = elsrc->lslots[i];
                   }
                else {
                   if ( getvar(varname, &parm) == Failed) {
                      VariableLookupFailed(varname);
                      }
                   pvar = VarLoc(parm);
-                  elsrc->lslots[i] = *pvar;
+                  elsrc->lslots[i] = parm;
                   if(complement) {
                      Protect(cp = alccset(), fatalerr(0,NULL));
                      cpx = (struct b_cset *)StrLoc(elsrc->lslots[i]);
@@ -640,9 +643,6 @@ struct b_list *ResolveList(struct b_list *lp)
                      }
                   }
                parm = elsrc->lslots[i];
-               }
-            else {
-               /*printf("Not sure what\n");*/
                }
             }
          else if (is:list(elsrc->lslots[i])) {
@@ -666,36 +666,313 @@ To get the values of the reserved words, the following \texttt{getkeyword()} fun
 \begin{verbatim}
 int getkeyword(char *s, dptr vp)
 {
-   if (strcmp(s, "&ascii") == 0) {
-      Kascii(vp);
-      return Succeeded;
-      }
-   if (strcmp(s, "&cset") == 0) {
-      Kcset(vp);
-      return Succeeded;
-      }
-   if (strcmp(s, "&digits") == 0) {
-      Kdigits(vp);
-      return Succeeded;
-      }
-   if (strcmp(s, "&lcase") == 0) {
-      Klcase(vp);
-      return Succeeded;
-      }
-   if (strcmp(s, "&letters") == 0) {
-      Kletters(vp);
-      return Succeeded;
-      }
-   if (strcmp(s, "&ucase") == 0) {
-      Kucase(vp);
-      return Succeeded;
+   if (*s++ == '&') {
+      switch(*s++) {
+      case 'a':
+         if (!strcmp(s, "scii")) { 
+            Kascii(vp); 
+            return Succeeded; }
+         break;
+      case 'c':
+         if (!strcmp(s, "set")) { 
+            Kcset(vp); 
+            return Succeeded; }
+         break;
+      case 'd':
+         if (!strcmp(s, "igits")) { 
+            Kdigits(vp); 
+            return Succeeded; }
+         break;
+      case 'l':
+         if (!strcmp(s, "etters")) {
+             Kletters(vp); 
+            return Succeeded; }
+         else if (!strcmp(s, "case")) { 
+            Klcase(vp); 
+            return Succeeded; }
+         break;
+      case 'u':
+         if (!strcmp(s, "case")) { 
+            Kucase(vp); 
+            return Succeeded; }
+         break;
+         }
       }
    return Failed;
+}
+\end{verbatim}
+\textbf{\subsubsection{Procedure and Method calls in Unevaluated Expressions}}
+During runtime a pattern is implemented in two phases, the first being its construction where the arguments and variables are assigned, followed by pattern execution.  The values for the arguments and variables are set during its construction.  This static nature of pattern components is inefficient and a possible maintenance nightmare \cite{Gaikaiwari2005}.  The unevaluated expression facility allows the use of the current values of variables and arguments during execution \cite{Gaikaiwari2005}. 
+
+In the pattern \texttt{pat := Len(n)} the value of n is assigned during pattern construction.  Every time the \texttt{pat} is used, \texttt{n} will have the value it was assigned when it was dereferenced and passed on to \texttt{Len()}.  Had \texttt{n} not been assigned a value then it would be \texttt{\&null} which would produce an error in the \texttt{Len()} pattern function.  On the other hand, had the pattern been defined with \texttt{n} being an unevaluated expression, such as \texttt{ pat := Len(`n`)}, then the current value of \texttt{n} would be used each time \texttt{pat} was used.  If the value of \texttt{n} changed, then the next time \texttt{pat} is used, it would use the new value for \texttt{n}.
+
+The same is true with making procedure and method calls within unevaluated expressions.  To get the full advantage of making such calls, pattern functions were revised to support unevaluated procedure and function calls as arguments.  Functions that require an integer argument call the \texttt{ConvertPatternArgumentInt} macro and those that require a cset argument call the \texttt{ConvertPatternArgumentCset} macro.  These macros required the defined values \texttt{PC\_Pred\_Func} and \texttt{PC\_Pred\_MF} be added to the \texttt{switch(pe->pcode)} code block as follows:\\
+\begin{alltt}
+   #begdef ConvertPatternArgumentCset(arg, bp, ptype)
+      type_case arg of \{
+         pattern: \{
+         struct b_pattern *pat = (struct b_pattern *)BlkLoc(arg);
+         struct b_pelem *pe = (struct b_pelem *)pat->pe;
+         switch(pe->pcode) \{
+            case PC_Rpat: \{
+               bp = pattern_make(0, &EOP,ptype ## _VP,1, pe->parameter);
+               break;
+               \}
+            \underline{case PC_Pred_Func:}
+            case PC_String_VF: \{
+               bp = pattern_make(0, &EOP,ptype ## _VF,1, pe->parameter);
+               break;
+               \}
+            \underline{case PC_Pred_MF:}
+            case PC_String_MF: \{
+               bp = pattern_make(0, &EOP,ptype ## _MF,1, pe->parameter);
+               break;
+               \}
+            default: \{
+               runerr(127);
+               \}
+            \}
+         \}
+      default: \{
+         if (!cnv_cset(&arg, &arg))
+            runerr(104, arg);
+         bp = pattern_make(0, &EOP, ptype ## _CS,1, arg);
+         \}
+      \}
+   #enddef
+\end{alltt} 
+
+By adding these two lines, the macro is able to recognize unevaluated procedure and method calls and use the appropriate arguments when calling the \texttt{pattern\_make()} function.
+
+During pattern evaluation, pattern functions that require an integer or cset argument, call either the  \texttt{GetResultFromFuncCall()} function or the \texttt{GetResultFromMethodCall()} function.  Again, Gaikaiwari's version of these functions did not support nested lists.\\
+
+\begin{verbatim}
+#begdef GetResultFromFuncCall()
+   int nargs;
+   struct descrip procargs[10];
+   struct descrip proc;
+   tended struct b_lelem *ep;
+   int i;
+   tended struct descrip cresult;
+   dptr call_result;
+   tended struct b_list *lp = 
+         (struct b_list *)BlkLoc(Node->parameter);
+   nargs = lp->size -1;
+   ep = (struct b_lelem *)lp->listhead;
+   proc = ep->lslots[0];
+   for (; BlkType(ep) == T_Lelem; 
+         ep = (struct b_lelem *)ep->listnext) {
+      for (i = 1; i < ep->nused; i++) {
+         procargs[i - 1] = ep->lslots[i];
+         }
+      }
+   call_result = calliconproc(proc,procargs,nargs);
+   if (call_result == 0  || call_result->vword.descptr == 0 ){
+      goto Node_Fail;
+      }
+   cresult = *call_result;
+#enddef
+\end{verbatim}
+The above code can handle a function call with only integers, strings and csets as arguments.  Nested function calls were not supported. 
+
+The \texttt{processFuncCallList()} function was revised to handle the nested lists generated by the new \texttt{emit\_code\_for\_uneval()} procedure.  \texttt{GetResultFromFuncCall()} was revised to get the resulting value of the recursive function \texttt{processFuncCallList()}.\\ 
+\begin{verbatim}
+#begdef GetResultFromFuncCall()
+   tended struct descrip cresult;
+   dptr call_result;
+   tended struct b_list *lp = (struct b_list *)BlkLoc(Node->parameter);
+   call_result = processFuncCallList(lp);
+   if (call_result == 0  || call_result->vword.descptr == 0 ){
+      goto Node_Fail;
+      }
+   cresult = *call_result;
+   if(is:integer(cresult)) {
+      internalIntStorage = cresult.vword.bptr;
+      }
+#enddef
+\end{verbatim}
+By making the \texttt{processFuncCallList()} function recursive, method and procedure calls can be used as arguments in the unevaluated function call.\\
+
+\begin{verbatim}
+dptr processFuncCallList(struct b_list *lp){
+   int nargs;
+   tended struct b_lelem *ep;
+   struct descrip proc;
+   int i;
+   dptr rv;
+   struct descrip procargs[10];
+   tended struct descrip cresult;
+   dptr call_result;
+   tended char *temp;
+   nargs = lp->size -1;
+   ep = (struct b_lelem *)lp->listhead;
+   proc = ep->lslots[0];
+      for (i = 1; i < ep->nused; i++) {
+         if(is:list(ep->lslots[i])) {
+            /*check for method call else function call*/
+            if(isMethod(ep) >= 0) 
+               rv = processMethodCallList(BlkD(ep->lslots[i], List));
+         else rv = processFuncCallList(BlkD(ep->lslots[i], List));
+         rv = processFuncCallList(BlkD(ep->lslots[i],List));
+         if (rv == 0) return 0;
+         procargs[i - 1] = *rv;
+         }
+      else if (is:variable(ep->lslots[i])) {
+         procargs[i - 1] = *(ep->lslots[i].vword.descptr);
+         }
+      else {
+         procargs[i - 1] = ep->lslots[i];
+         }
+      }
+   call_result = calliconproc(proc,procargs,nargs);
+   return call_result;
+   }
+\end{verbatim}
+If a pattern is defined as \texttt{pat := Len(`foo(bar(arg))`)}, then a list for the unevaluated expression \texttt{foo(bar(arg))} would be \texttt{(["foo", ["bar", "arg"]])}.  The value \texttt{"foo"} would be recognized as the name of the procedure being called.  The first argument of \texttt{foo} would be the list \texttt{["bar", "arg"]}.  After discovering that \texttt{"bar"} is also a procedure, the \texttt{processFuncCallList()} would be recursively called with \texttt{"arg"} as its argument.
+
+The \texttt{GetResultFromMethodCall()} macro was handled in a similar manner.  It calls the recursive function \texttt{processMethodCallList()} to handle the analysis of the list.\\
+
+\begin{verbatim}
+#begdef GetResultFromMethodCall()
+   int nargs;
+   tended struct descrip cresult;
+   dptr call_result;
+   tended struct b_list *lp = 
+         (struct b_list *)BlkLoc(Node->parameter);
+   nargs = lp->size -1;
+   if (is:list(Node->parameter)) {
+      call_result = processMethodCallList(lp);
+      if ( call_result == 0 ) goto Node_Fail;
+      cresult = *call_result;
+      if(is:integer(cresult)) {
+         internalIntStorage = cresult.vword.bptr;
+         }
+      }
+   else {
+      ErrorDuringPatternMatch("error in method call parameters");
+      }
+#enddef
+\end{verbatim}
+There are some differnces in how the data for method calls of objects are stored in the lists generated by \texttt{emit\_code\_for\_uneval()}.  In the procedure call list, the first cell is the name of the procedure.  In method call lists, the first cell is the name of the object and the second cell is the method name.  A pattern definded as \texttt{pat := Span(`foo.bar(arg)`)}, would result in the list \texttt{(["foo", "bar", "arg"]}.  The \texttt{GetResultFromMethodCall()} macro calls the recursive function \newline\texttt{processMethodCallList()}. \\
+
+\begin{verbatim}
+dptr processMethodCallList(struct b_list *lp){
+   int nargs;
+   tended struct b_lelem *ep;
+   tended struct b_record *rp;
+   union block *bptr;
+   struct descrip methodptr;
+   struct descrip proc;
+   struct descrip self;
+   struct descrip argmnt;
+   int i;
+   dptr rv;
+   struct descrip procargs[10];
+   dptr call_result;
+   struct descrip var;
+   tended char *varname;
+   int i, nfields, fnum;
+   int found__m = 0;
+   nargs = lp->size - 1;
+   ep = (struct b_lelem *)lp->listhead;
+   cnv:C_string(ep->lslots[0], varname);
+   if (getvar(varname, &var) == Failed) {
+      VariableLookupFailed(varname);
+      }
+   procargs[0] = var;
+   deref(&var,&var);
+   if (!is:record(var))
+      RunErr(107, &var);
+   self = var;
+   found__m = isMethod(ep);
+   methodptr = ep->lslots[1];
+   rp = (struct b_record *)BlkLoc(var);
+   if (found__m == -1) {
+      fprintf(stderr, "Trying to lookup method from a non object");
+      fatalerr(0, NULL);
+      }
+   var = rp->fields[found__m];
+   rp = (struct b_record *)BlkLoc(var);
+   bptr = rp->recdesc;
+   nfields = bptr->Proc.nfields;
+   for (i=0; i<nfields; i++) {
+      if ((StrLen(methodptr) == 
+            StrLen(bptr->Proc.lnames[i])) &&
+            !strncmp(StrLoc(methodptr),
+                  StrLoc(bptr->Proc.lnames[i]),
+                  StrLen(methodptr)))
+         break;
+         }
+      if (i<nfields)
+         fnum = i;
+      else {
+         VariableLookupFailed(varname);
+         }
+      proc = rp->fields[fnum];
+      for (i = 1; i < ep->nused; i++) {
+         if(is:list(ep->lslots[i])) {
+            /* check for method call else function call*/
+            if(isMethod(ep) >= 0) {
+               rv = processMethodCallList(BlkD(ep->lslots[i], List));
+               }
+            else {
+               rv = processFuncCallList(BlkD(ep->lslots[i], List));
+               }
+            if (rv == 0) return 0;
+            procargs[i - 1] = *rv;
+            }
+         else if (is:variable(ep->lslots[i])) {
+            procargs[i - 1] = *(ep->lslots[i].vword.descptr);
+            }
+         else {
+            if (i == 1) procargs[i - 1] = self;
+            else if(strpbrk(ep->lslots[i].vword.sptr,
+                  "abcdefghijklmnopqrstuvwxyz
+                  ABCDEFGHIJKLMNOPQRSTUVWXYZ_") == NULL) {
+               cnv:integer(ep->lslots[i], argmnt);
+               procargs[i - 1] = argmnt;
+               }
+            else procargs[i - 1] = ep->lslots[i];
+         }
+      }
+   call_result = (dptr)calliconproc(proc,procargs,nargs);
+   return call_result;
+   }
+\end{verbatim}
+
+It is possible to have nested procedures and methods in an unevaluated expression.  There are differences in how to interpret the lists.  With a procedure call the first cell is for the procedure name, while with the method call the first two cells are for the object name and the method name respectively.  Take the list \texttt{(["foo", "bar", "arg"]}, it could also be a procedure call with two arguments.  The \texttt{isMethod()} function checks to see if there is a method matching the parameters given.  In this case it checks to see if there is an object called \texttt{foo} and a method in that object called \texttt{bar}.  If it succeeds then it will return its field number, otherwise it will return a -1.  This helper function is used in \texttt{processFuncCallList()} and \texttt{processMethodCallList()} to determine if a list is for a method call.\\
+
+\begin{verbatim}
+int isMethod(struct b_lelem *ep){
+   tended struct b_record *rp;
+   union block *bptr;
+   struct descrip var;
+   tended char *varname;
+   struct descrip procargs[10];
+   struct descrip methodptr;
+   int i, found__m = -1;
+   cnv:C_string(ep->lslots[0],varname);
+   if (getvar(varname,&var) == Failed) {
+      VariableLookupFailed(varname);
+      }
+   procargs[0] = var;
+   deref(&var,&var);
+   if (!is:record(var))
+      RunErr(107, &var);
+   methodptr = ep->lslots[1];
+   rp = (struct b_record *)BlkLoc(var);
+   bptr = rp->recdesc;
+   for( i = 0; i < bptr->Proc.nfields;i++) {
+      if (!strcmp(StrLoc(bptr->Proc.lnames[i]), "__m")) {
+         found__m = i;
+         break;}
+      }/* for ... nfields */
+   return found__m;
    }
 \end{verbatim}
 
 \textbf{\subsubsection{String and Pattern Concatenation Operators}}
-Both string concatenation and pattern concatenation result in the joining of two strings, but in the case of pattern concatenation the strings may not be defined until runtime.  The existing string concatenation operator accepted only strings and csets, while pattern concatenation accepts strings, c-sets and patterns.  As patterns and strings are different data types, string concatenation and pattern concatenation are handled as separate operations.  Therefore concatenation operator must identify whether a pattern is being used.  Then it has to send the appropriate data to the appropriate concatenation operation.
+Both string concatenation and pattern concatenation result in the joining of any two values that can be converted into strings, but in the case of pattern concatenation the values may not be defined until runtime.  Pattern concatenation accepts values that can be converted into patterns, such as strings, csets and patterns.  As patterns and strings are different data types, string concatenation and pattern concatenation are handled as separate operations.  Therefore concatenation operator must identify whether a pattern is being used.  Then it has to send the appropriate data to the appropriate concatenation operation.
 
 The following code identifies whether a pattern is being used with the concatenation operator.  If it is, then a pattern object will be returned; otherwise a string is returned.\\
 \begin{verbatim}
@@ -884,12 +1161,12 @@ procedure main()
    line := "Uncle Sam: (800)555-1212 or uncle.sam@us.gov"
    threedigit := Any(&digits) || Any(&digits) || Any(&digits)
    fourdigit := threedigit || Any(&digits)
-   area := ( "(" || (threedigit => areaCode) || ")" )
-   pattern := ((threedigit => areaCode) || (Any(' -.') => sep) 
-         || (threedigit => trunk) || `sep` 
-         || (fourdigit => number))
-         .| ((area => areaCode) || (threedigit => trunk) 
-         || (Any(' -.') => sep) || (fourdigit => number))
+   area :=  "(" || threedigit => areaCode || ")" 
+   pattern := (threedigit => areaCode || Any(' -.') => sep || 
+         threedigit => trunk || `sep` || 
+         fourdigit => number) 
+         .| (area || threedigit => trunk || 
+         Any(' -.') => sep || fourdigit => number)
    line ?? pattern
    write("(" || areaCode || ")" || trunk || sep || number) 
 end
@@ -903,12 +1180,12 @@ procedure main()
    line := "Uncle Sam: (800)555-1212 or uncle.sam@us.gov"
    threedigit := Any(&digits) || Any(&digits) || Any(&digits)
    fourdigit := threedigit || Any(&digits)
-   area := ("(" || (threedigit => areaCode) || ")" )
-   pattern := (Arb() || (threedigit => areaCode) || 
-         (Any(' -.') => sep) || (threedigit => trunk) || 
-         Any(`sep`) || (fourdigit => number)) 
-         .| (Arb() || (area || (threedigit => trunk) || 
-         (Any(' -.') => sep) || (fourdigit => number))
+   area := ("(" || threedigit => areaCode || ")" )
+   pattern := (Arb() || threedigit => areaCode || 
+         Any(' -.') => sep || threedigit => trunk || 
+         Any(`sep`) || fourdigit => number) 
+         .| (Arb() || (area || threedigit => trunk || 
+         Any(' -.') => sep || fourdigit => number)
    line ? =pattern 
    write("(" || areaCode || ")" || trunk || sep || number)
 end
@@ -922,11 +1199,11 @@ procedure main()
    digit := `tab(any(&digits))`
    threedigit := digit || digit || digit
    fourdigit := threedigit || digit
-   area := ( "(" || (threedigit => areaCode) || ")" )
-   pattern := ((threedigit => areaCode) || (Any(' -.') => sep) ||
-         (threedigit => trunk) || `sep` || (fourdigit => number)) 
-         .| (area || (threedigit => trunk) || (Any(' -.') => sep) ||
-         (fourdigit => number))
+   area := ( "(" || threedigit => areaCode || ")" )
+   pattern := (threedigit => areaCode || Any(' -.') => sep ||
+         threedigit => trunk || `sep` || fourdigit => number) 
+         .| (area || threedigit => trunk || Any(' -.') => sep ||
+         fourdigit => number)
    line ?? pattern
    write("(" || areaCode || ")" || trunk || sep || number) 
 end
@@ -942,13 +1219,13 @@ The following table shows the number of lines, words and characters that were us
 		\hline
 		String scanning & 21 & 74 & 510 & 364 \\
 		Gaikaiwari's Patterns & 9 & 81 & 532 & 409 \\
-		Patterns & 9 & 84 & 560 & 431 \\
-		Pattern in string scanning & 11 & 88 & 578 & 451 \\
-		Unevaluated expression & 10 & 85 & 526 & 417 \\
+		Patterns & 9 & 80 & 504 & 401 \\
+		Pattern in string scanning & 10 & 91 & 548 & 432 \\
+		Unevaluated expression & 11 & 89 & 515 & 401 \\
 		\hline
 	\end{tabular}
 \end{table}\\
-In this first benchmark the string scanning solution used more lines of code, but used fewer words and characters to accomplish the same result as the other solutions.  Among the various pattern examples the regular pattern and the unevaluated expression examples are the most readable due to the revisions made for lexical consistency.
+In this first benchmark the string scanning solution used more lines of code, but used fewer words and characters to accomplish the same result as the other solutions.
 
 \textbf{\subsection{Detecting words with double letters}}
 In order to identify each word from a source file that has double letters, the procedure must be able to identify words like
@@ -1000,7 +1277,7 @@ The sample code below is the same as Gaikaiwari's, but it has been revised for t
 procedure main()
    in := open("mtent12.txt", "r") | stop("open failed")
    out := open("mtentpatternOut.txt", "w")
-   double := Arbno(&letters) || (Any(&letters) => x) || `x` ||
+   double := Arbno(&letters) || Any(&letters) => x || `x` ||
       (Span(&letters) .| "")
    every write(out, (line := !in) ?? double)
 end 
@@ -1012,7 +1289,7 @@ In the following example the string scanning environment is initialized to ident
 procedure main()
    in := open("mtent12.txt", "r") | stop("open failed")
    out := open("mtentpatternOut.txt", "w")
-   double := Arb() || (Any(&letters) => x) || `x`
+   double := Arb() || Any(&letters) => x || `x`
    while line := read(in) do {
       line ? {
          while(tab(upto(&letters))) do {
@@ -1029,7 +1306,7 @@ The following is similar to the pattern example in that it replaces the \texttt{
 procedure main()
    in := open("mtent12.txt", "r") | stop("open failed")
    out := open("mtentpatternOut.txt", "w")
-   double := Arbno(&letters) || (`tab(any(&letters))` => x) ||
+   double := Arbno(&letters) || `tab(any(&letters))` => x ||
          `x` || (Span(&letters) .| "")
    every write(out, (line := !in) ?? double)
 end 
@@ -1045,9 +1322,9 @@ end
 		\hline
 		String scanning & 18 & 53 & 470 & 250 \\
 		Gaikaiwari's Patterns & 6 & 34 & 245 & 205 \\
-		Unicon Patterns & 6 & 34 & 250 & 205 \\
-		Pattern and string scanning & 13 & 48 & 373 & 256 \\
-		Unevaluated expression & 6 & 34 & 258 & 212 \\
+		Unicon Patterns & 6 & 34 & 255 & 203 \\
+		Pattern and string scanning & 13 & 48 & 371 & 254 \\
+		Unevaluated expression & 6 & 34 & 256 & 210 \\
 		\hline
 	\end{tabular}
 \end{table}
@@ -1193,7 +1470,7 @@ procedure main(args)
    write(count)
 end
 \end{verbatim}
-Both are the same solution to the problem.  There are slight gains in typing in the second.  This is a result of not having to use the \texttt{PNotAny()} function as the same result can be achieved with the \texttt{Any()} function while using the \texttt{\~} before the cset.  This also improves the readability of code.
+Both are the same solution to the problem.  There are slight gains in typing in the second.  This is a result of not having to use the \texttt{PNotAny()} function as the same result can be achieved with the \texttt{Any()} function while using the \texttt{\~} before the cset.  
 
 Finally, the following code resolves the problem using pattern matching from the string scanning environment.
 \begin{verbatim}
