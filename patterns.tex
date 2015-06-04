@@ -1522,8 +1522,33 @@ Again the pattern examples require the fewest lines and characters, demonstratin
 \textbf{\section{Conclusions}}
 The integration of Gaikaiwari's pattern matching environment and the Unicon string scanning environment resulted in allowing users to utilize the pattern matching facilities from a string scanning environment, utilize the string scanning functions from the pattern matching environment, reduced the pattern matching functions by removing redundant functions, and made the pattern matching lexically harmonious with the Unicon language.
 
+\subsection{Reduced Pattern Function Set}
+
 The lexical changes made the pattern functions simpler lexically.  The functional changes with the use of the complement operator \texttt{\~}, it was possible to reduce the size of the pattern function set.  Clarity was improved with a lexically consistent pattern concatenation operator, lexically consistent lexemes for the pattern assignment operators and more concise lexemes for the pattern functions.
 
+need to add:
+Repl(pat, n)
+
+\subsection{Pattern and String Scanning Integration}
+
+subject ? =pat
+string scanning with unevaluated expressions
+
+\subsection{Static Procedure, Method and Variable Calls}
+
+\texttt{pat := foo(arg)}
+\texttt{pat := foo(`arg`)}
+
+\subsection{Improvements to Unevaluated Exressions}
+
+\texttt{pat := Len(3) => arg || `foo(arg)`}
+\texttt{pat := `foo(bar(arg))`}
+\texttt{pat := `foo.bar(arg)`}
+
+not supported:
+\texttt{pat := `foo(arg[n:n])`}
+
+\subsection{Benchmark Problems}
 In each of the benchmark problems it was shown that pattern matching in Unicon is a viable option in string analysis.    Although, the modified pattern type developed for this thesis did not produce significantly improved code lengths as compared to Gaikaiwari's patterns, it still produced a significant improvement over the string scanning environment of Unicon in two of the four benchmark problems.  
 
 Pattern matching does not always result in shorter and therefore simpler code, pattern matching is a useful improvement to the Unicon language.  It allows those users that prefer the functionality of SNOBOL4 patterns to use a similar system of string analysis.
