@@ -29,10 +29,10 @@
 \contentsline {subsection}{\numberline {5.4}Number of times a word is used}{47}
 \contentsline {section}{\numberline {6}Conclusions}{51}
 \contentsline {subsection}{\numberline {6.1}Reduced Pattern Function Set}{51}
-\contentsline {subsection}{\numberline {6.2}Pattern and String Scanning Integration}{51}
-\contentsline {subsection}{\numberline {6.3}Static Procedure, Method and Variable Calls}{51}
-\contentsline {subsection}{\numberline {6.4}Improvements to Unevaluated Exressions}{51}
+\contentsline {subsection}{\numberline {6.2}Pattern and String Scanning Integration}{52}
+\contentsline {subsection}{\numberline {6.3}Static Procedure, Method and Variable Calls}{52}
+\contentsline {subsection}{\numberline {6.4}Improvements to Unevaluated Exressions}{52}
 \contentsline {subsection}{\numberline {6.5}Benchmark Problems}{52}
-\contentsline {section}{\numberline {7}Future Work}{53}
-\contentsline {section}{Bibliography}{55}
-\contentsline {section}{Appendix A: Pattern Facilities Language Reference}{56}
+\contentsline {section}{\numberline {7}Future Work}{54}
+\contentsline {section}{Bibliography}{56}
+\contentsline {section}{Appendix A: Pattern Facilities Language Reference}{57}

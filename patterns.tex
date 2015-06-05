@@ -1520,31 +1520,31 @@ Again the pattern examples require the fewest lines and characters, demonstratin
 
 \pagebreak
 \textbf{\section{Conclusions}}
-The integration of Gaikaiwari's pattern matching environment and the Unicon string scanning environment resulted in allowing users to utilize the pattern matching facilities from a string scanning environment, utilize the string scanning functions from the pattern matching environment, reduced the pattern matching functions by removing redundant functions, and made the pattern matching lexically harmonious with the Unicon language.
+In the process of integrating pattern matching with string scanning, the pattern function set has been reduced, string scanning is able to perform pattern matching with the tabmat operator \texttt{=}, pattern matching can perform string scanning operations, and the unevaluated expressions can handle complex procedure and method calls.  
 
 \subsection{Reduced Pattern Function Set}
+The integration of Gaikaiwari's pattern matching environment and the Unicon string scanning environment resulted in allowing users to utilize the pattern matching facilities from a string scanning environment.  Pattern matching functions using the complement operator \texttt{\~} made some SNOBOL4 pattern functions redundant.  \texttt{NOTANY()}, \texttt{RTAB()} and \texttt{RPOS} are such examples and their functionality are available with \texttt{Any()}, \texttt{Tab()} and \texttt{Pos()} respectively.
 
-The lexical changes made the pattern functions simpler lexically.  The functional changes with the use of the complement operator \texttt{\~}, it was possible to reduce the size of the pattern function set.  Clarity was improved with a lexically consistent pattern concatenation operator, lexically consistent lexemes for the pattern assignment operators and more concise lexemes for the pattern functions.
-
-need to add:
-Repl(pat, n)
+In the first benchmark problem, there were several examples of how to extract a phone number from a body of text.  A pattern function allowing the user to identify the number of times a pattern is replicated would have been very useful in defining the number of digits in each portion of the number.  If a user was looking for a pattern that is repeated several times, the \texttt{Repl()} pattern function would make the code shorter and cleaner. 
 
 \subsection{Pattern and String Scanning Integration}
+The tabmat operator \texttt{=} is used to make a pattern match within a string scanning operation.  When combined with an evaluation, it allows the user to easily make comparisons to complex patterns.  While performing a string scanning operation, the user wants to see if the next block of text matches a complex pattern that is defined the code would be \texttt{if =complexPattern then}.  With such an expression the index location in the subject string would be advanced to the end of the pattern, to save the content of the pattern the code to use would be \texttt{if mat := =complexPattern then}.
 
-subject ? =pat
-string scanning with unevaluated expressions
-
-\subsection{Static Procedure, Method and Variable Calls}
-
-\texttt{pat := foo(arg)}
-\texttt{pat := foo(`arg`)}
+Some of the changes to unevaluated expressions made string scanning functions available within a pattern.  When a user wants to use string scanning function calls as a part of pattern, it can be done with an unevaluated expression.  \texttt{pat := `tab(upto(&letters))` || Len(5)} results in a string containing five characters beginning at the first letter in the subject string.
 
 \subsection{Improvements to Unevaluated Exressions}
+Procedure, method and variable call can still be a part of a pattern definition.  If they are not included in an unevaluated expression, they are static and their values are determined during pattern construction time.  If they are not defined prior to pattern construction then their value is\texttt{&null}.  With a pattern definition of \texttt{pat := foo(arg)}, the procedure \texttt{foo()} would be called with the value of \texttt{arg} being passed as an argument.  If \texttt{arg} is not defined during compilation, then \texttt{foo()} will be passed \texttt{&null} and \texttt{foo()} had better be able to handle a \texttt{&null}.  Otherwise, an error could occur or the results will not be what the user intended.  
+
+%test this
+A way to avoid this problem is to include \texttt{arg} in an unevaluated expression as follows: \texttt{pat := foo(`arg`)}.  In this case, the current value of \texttt{arg} will be used whenever \texttt{pat} is used in a pattern match.
+
+
 
 \texttt{pat := Len(3) => arg || `foo(arg)`}
 \texttt{pat := `foo(bar(arg))`}
 \texttt{pat := `foo.bar(arg)`}
 
+%test this
 not supported:
 \texttt{pat := `foo(arg[n:n])`}
 
