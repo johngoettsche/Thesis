@@ -1,0 +1,5 @@
+procedure main()
+	line := "abcdefghijk"
+	pattern := `tab(upto(&letters))` || Len(1)
+	write(line ?? pattern)
+end

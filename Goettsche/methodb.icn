@@ -1,0 +1,25 @@
+procedure main()
+	test := foo()
+	line := "abcdefghijklmnopqrstuvwxyz"
+	pattern := Len(`double(2)`)
+write("***********************************************")
+	write(line ?? pattern)
+end
+
+procedure double(x)
+	return 2 * x
+end
+
+class foo(y)
+	method bar(x)
+		return y * x
+	end
+	method setY(newy)
+		y := newy
+	end
+	method let()
+		return "op"
+	end
+initially
+	y := 3
+end

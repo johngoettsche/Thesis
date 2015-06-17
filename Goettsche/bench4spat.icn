@@ -1,0 +1,8 @@
+procedure main(args)
+   in := open("test.txt", "r") | stop("open failed")
+   word := read()
+   pattern := PNotAny(&letters) && word && PNotAny(&letters)
+   count := 0
+   every w := !in ?? pattern do count +:= 1
+   write(count)
+end

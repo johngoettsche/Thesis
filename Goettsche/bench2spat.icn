@@ -1,0 +1,7 @@
+procedure main()
+   in := open("mtent12.txt", "r") | stop("open failed")
+   out := open("mtentpatternOut.txt, "w")
+   double := PArbno(&letters) && PAny(&letters) $$ x && `x` && 
+      (PSpan(&letters) .| "")
+   every write(out, (line := !in) ?? double)
+end

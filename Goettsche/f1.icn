@@ -1,0 +1,5 @@
+procedure main()
+	pat := ("abc" || Back()) .| "c" || "def"
+	line := "abcdefghi"
+	write(line ?? pat)
+end

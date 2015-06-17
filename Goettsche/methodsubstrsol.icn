@@ -1,0 +1,13 @@
+   procedure main()
+      line := "abcdefghijklmnopqrstuvwxyz"
+      sub := Pos(`n`) || Len(`m`)
+      pattern := Len(`foo(subline)`)
+      n := 3
+      m := 5 - n
+      subline := line ?? sub
+      write(line ?? pattern)
+   end
+
+   procedure foo(str)
+      return *str
+   end

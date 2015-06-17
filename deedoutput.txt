@@ -1,0 +1,14 @@
+john@viola:~/unicon-code/unicon/tests/pattern/Goettsche$ ./deedreader description.txt
+N 10000.0	E 5000.0
+1	North 89%%d57'23" E	152.32 feet
+N 10151.97397	E 5002.812651
+2	North 00%%d02'13" E	217.58 feet
+N 10148.26359	E 5219.780927
+3	South 89%%d57'21" W	152.33 feet
+N 9996.289643	E 5216.966803
+4	South 00%%d02'15" W	217.55 feet
+N 9999.997923	E 4999.99849
+
+Distance Error: 0.00256721753
+Relative Error: 1:287470.7699
+john@viola:~/unicon-code/unicon/tests/pattern/Goettsche$ 

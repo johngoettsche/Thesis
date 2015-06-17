@@ -1,0 +1,17 @@
+
+procedure extend()
+   line := "hairbursh toothbrush"
+   line ? {
+      result := tab(many(&letters))
+      }
+   write(result)
+   return result
+end
+
+procedure main()
+   line := "too toothbrush too many"
+   word := Span(&letters)
+   pattern :=  word || " " || `extend()`
+   write("done with pattern construction time, moving to pattern match time")
+   write(line ?? pattern)
+end

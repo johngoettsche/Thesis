@@ -1,0 +1,14 @@
+procedure main(args)
+   in := open("test.txt", "r") | stop("open failed")
+   word := read()
+   count := 0
+   while line := read(in) do {
+      line ? {
+         while(tab(upto(&letters))) do {
+            word := tab(many(&letters))
+            if word === word then count +:= 1
+         }
+      }
+   }
+   write(count)
+end

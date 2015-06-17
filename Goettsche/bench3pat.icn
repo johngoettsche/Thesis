@@ -1,0 +1,10 @@
+procedure main()
+   pattern := Pos(1) || Span("a") || .> a || Span("b") || .> b || 
+         Span("c") || .> c
+   while write(line := read()) do {
+      if(line ?? pattern) then {
+         if (a - 1 == b - a & a - 1 == c - b) then write(" accepted")
+         else write(" rejected")
+      }
+   }
+end

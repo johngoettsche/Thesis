@@ -1,0 +1,11 @@
+procedure main()
+	line := "abcdefghijklmnopqrstuvwxyz"
+	pattern := Len(`foo(arg)`)
+write("***********************************************")
+	arg := 2
+	write(line ?? pattern)
+end
+
+procedure foo(n)
+	return 2 * n
+end

@@ -1,0 +1,13 @@
+procedure main()
+   line := "Uncle Sam: (800)555-1212 or uncle.sam@us.gov"
+   threedigit := PAny(&digits) && PAny(&digits) && PAny(&digits)
+   fourdigit := threedigit && PAny(&digits)
+   area := ("(" && threedigit => areaCode && ")" )
+   pattern := (threedigit => areaCode && PAny(' -.') => sep
+         && threedigit => trunk && `sep`
+         && fourdigit => number)
+      .| (area && threedigit => trunk
+         && PAny(' -.') => sep && fourdigit => number)
+   line ?? pattern
+   write(“(“ || areaCode || “)” || trunk || sep || number) 
+end

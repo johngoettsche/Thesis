@@ -1,0 +1,9 @@
+procedure main()
+	line := "abcdefghijklmnopqrstuvwxyz"
+	pattern := Len(`foo(line[3:5])`)
+	write(line ?? pattern)
+end
+
+procedure foo(str)
+	return *str
+end

@@ -1,0 +1,7 @@
+procedure main()
+   in := open("mtent12.txt", "r") | stop("open failed")
+   out := open("mtentpatternOut.txt", "w")
+   double := Arbno(&letters) || Any(&letters) => x || `x` ||
+      (Span(&letters) .| "")
+   every write(out, (line := !in) ?? double)
+end 

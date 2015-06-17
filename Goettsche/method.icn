@@ -1,0 +1,16 @@
+procedure main()
+	test := foo()
+	line := "abcdefghijklmnopqrstuvwxyz"
+	pattern := Len(`test.bar(3)`) 
+	pattern2 := Len(`test.y`) 
+write("***********************************************")
+	write(line ?? pattern)
+end
+
+class foo(y)
+	method bar(n)
+		return 2 * n
+	end
+initially
+	y := 3
+end

@@ -1,0 +1,5 @@
+procedure main()
+	pat := `tab(upto(&letters))`
+	line := "123abc123"
+	write(line ?? pat)
+end

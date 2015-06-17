@@ -1,0 +1,12 @@
+procedure main(args)
+   in := open("test.txt", "r") | stop("open failed")
+   word := read()
+   pattern := Arb() || Any(~&letters) || word || Any(~&letters)
+   count := 0
+   every line := !in do {
+      line ? {
+         while =pattern do count +:= 1
+      }
+   }
+   write(count)
+end

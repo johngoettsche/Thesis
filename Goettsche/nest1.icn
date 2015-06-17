@@ -1,0 +1,7 @@
+procedure main()
+   line := "tooth toothbrush xx xx"
+   word := Span(&letters)
+	out := &output
+   pattern :=  word => w || " " || `w`
+   write(line ?? pattern)
+end

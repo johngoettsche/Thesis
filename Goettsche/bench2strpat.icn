@@ -1,0 +1,13 @@
+procedure main()
+   in := open("mtent12.txt", "r") | stop("open failed")
+   out := open("mtentpatternOut.txt", "w")
+   double := Arb() || Any(&letters) => x || `x`
+   while line := read(in) do {
+      line ? {
+         while(tab(upto(&letters))) do {
+            word := tab(many(&letters))
+            if word ? =double then write(out, word)
+         }
+      }
+   }
+end 

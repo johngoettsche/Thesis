@@ -1,0 +1,21 @@
+procedure digits(N)
+   if N = 0 then return ""
+   else return tab(any(&digits)) || digits(N - 1)
+end
+
+procedure main()
+   line := "Uncle Sam: (800)555-1212 or uncle.sam@us.gov"
+   sep := ""
+   a := 0
+   line ? {
+      tab(upto(&digits))
+      areaCode := digits(3)
+      sep := tab(any(' -.'))
+      tab(upto(&digits))
+      trunk := digits(3)
+      if sep === "" then sep := tab(any(' -.'))
+      else tab(any(sep))
+      number := digits(4)
+   }
+   write("(" || areaCode || ")" || trunk || sep || number)
+end

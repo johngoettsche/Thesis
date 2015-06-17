@@ -1,0 +1,12 @@
+procedure test(a, b, c)
+   return ((a - 1) = (b - a)) & ((a - 1) = (c - b))
+end
+
+procedure main()
+   pattern := PPos(1) && PSpan("a") && .$ a && PSpan("b") && .$ b && 
+         PSpan("c") && .$ c && PRpos(0) && `test(a, b, c)`
+   while write(line := read()) do {
+      if(line ?? pattern) then write(" accepted")
+      else write(" rejected")
+   }
+end

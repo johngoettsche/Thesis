@@ -1,0 +1,19 @@
+procedure main()
+   in := open("mtent12.txt", "r") | stop("open failed")
+   out := open("mtentpatternOut.txt", "w")
+   while line := read(in) do {
+      line ? {
+         while(tab(upto(&letters))) do {
+            word := tab(many(&letters))
+            word ? {
+               while c := move(1) do {
+                  if move(1) == c then {
+                     write(out, word)
+                     break;
+                  }
+               }
+            }
+         }
+      }
+   }
+end

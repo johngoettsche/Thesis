@@ -1,0 +1,6 @@
+procedure main()
+	s := "actinium      ac    89    227    1899    debierne"
+	p := (Break(" ") -> chars) || Span(" ")
+	every s ?? p := chars || ":" 
+	write(s)
+end

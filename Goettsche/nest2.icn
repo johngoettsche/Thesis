@@ -1,0 +1,20 @@
+
+procedure extend(word)
+   line := "hairbursh toothbrush"
+   pat := word || Rem()
+   result := line ?? pat
+write(word || " : " || result)
+   return result
+end
+
+procedure let()
+   return 'tho'
+end
+
+procedure main()
+out := &output
+   line := "tooth toothbrush too many"
+   pattern :=  Span(`let()`) => w || " " || `extend(w)` => out || " "
+   write("done with pattern construction time, moving to pattern match time")
+   write(line ?? pattern)
+end

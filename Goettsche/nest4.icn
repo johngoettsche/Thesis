@@ -1,0 +1,11 @@
+procedure strLength(word)
+   return *word
+end
+
+procedure main()
+   out := &output
+   line := "tooth toothbrush too many"
+   pattern :=  Span(&letters) => w || Len( `strLength(w)` ) => out
+   write("done with pattern construction time, moving to pattern match time")
+   write(line ?? pattern)
+end

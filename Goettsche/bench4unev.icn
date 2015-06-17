@@ -1,0 +1,9 @@
+procedure main(args)
+   in := open("test.txt", "r") | stop("open failed")
+   word := read()
+   pattern := `tab(any(~&letters))` || `word` || `tab(any(~&letters))`
+   count := 0
+write("************************")
+   every w := !in ?? pattern do count +:= 1
+   write(count)
+end
