@@ -109,7 +109,7 @@
 \begin{center}
 \textbf{Authorization to Submit Thesis}
 \end{center}
-This Thesis of John H. Goettsche, submitted forthe degree of Master of Science with a Major in Computer Science and titled ``Integrating Pattern Matching Within String Scanning,'' has been reviewed in final form.  Permission, as indicated by the signatures and dates below, is now granted to submit final copies to the College of Graduate Studies for approval.\\
+This Thesis of John H. Goettsche, submitted for the degree of Master of Science with a Major in Computer Science and titled ``Integrating Pattern Matching Within String Scanning,'' has been reviewed in final form.  Permission, as indicated by the signatures and dates below, is now granted to submit final copies to the College of Graduate Studies for approval.\\
 \vspace{0.3in}
 \begin{singlespace}
 \noindent
@@ -133,7 +133,7 @@ This Thesis of John H. Goettsche, submitted forthe degree of Master of Science w
 \textbf{Abstract}
 \end{center}
 
-A SNOBOL4 like pattern data type and pattern matching operation were introduced to the Unicon language in 2005, but patterns were not integrated with the Unicon string scanning control structure and hence, the SNOBOL style patterns were not adopted as part of the language at that time.  The goal of this project is to make the pattern data type accessible to the Unicon string scanning control structure and vice versa; and also make the pattern operators and functions lexically consistent with Unicon.  To accomplish these goals, a Unicon tabmat operator was changed to allow the execution of a pattern match in the anchored mode, pattern matching unevaluated expressions were revised to handle complex string scanning functions, and the pattern matching lexemes were revised to be more consistent with the Unicon language.
+A SNOBOL4 like pattern data type and pattern matching operation were introduced to the Unicon language in 2005, but patterns were not integrated with the Unicon string scanning control structure and hence, the SNOBOL style patterns were not adopted as part of the language at that time.  The goal of this project is to make the pattern data type accessible to the Unicon string scanning control structure and vice versa; and also make the pattern operators and functions lexically consistent with Unicon.  To accomplish these goals, a Unicon string matching was changed to allow the execution of a pattern match in the anchored mode, pattern matching unevaluated expressions were revised to handle complex string scanning functions, and the pattern matching lexemes were revised to be more consistent with the Unicon language.
 
 \pagebreak
 
@@ -1076,7 +1076,10 @@ The \texttt{Rpos(n)} and \texttt{Rtab(n)} functions are now redundant, but are s
 
 \pagebreak
 \textbf{\section{Evaluation}}
-To evaluate the how successful this implementation of SNOBOL4 style patterns with Unicon's string scanning environment, a set of benchmark problems is used.  The benchmarks are used to compare the solutions using Unicon string scanning environment, Gaikaiwari's pattern statements, current pattern statements, an anchored pattern match from the string scanning environment, and pattern definitions with unevaluated expressions with string scanning functions.  The solutions for each problem will be evaluated for clarity, simplicity and functionality.  Clarity deals with the readability of the lines of code for each particular problem.  Can the user or programmer read the code without any ambiguity as to what it is attempting to achieve?  Simplicity will be measured by the number of lines, words and characters required to achieve each benchmark problem.  Functionality of the example code will have to be consistent.  Each example will have to achieve the same result for each benchmark problem.  The benchmark problems are listed below:
+To evaluate the success of this implementation of SNOBOL4 style patterns with Unicon's string scanning environment, an examination of the improved options for string analysis available to the user and examine the user and how thorough the implementation is functionally.  A set of benchmark problems were used to examine the improved efficiency and flexibility of using pattern matching in Unicon.
+
+\textbf{\subsection{Benchmarks}}
+Four benchmark problems were used to demonstrate the efficiency and flexibility n using pattern matching.  The solutions to the benchmark problems were done using Unicon string scanning environment, Gaikaiwari's pattern statements, current pattern statements, an anchored pattern match from the string scanning environment, and pattern definitions with unevaluated expressions with string scanning functions.  The solutions for each problem were evaluated for their clarity and simplicity.  Clarity is based on the readability and clarity of the solution.  Can the user or programmer read the code without any ambiguity as to what it is attempting to achieve?  Simplicity was measured by the number of lines, words and characters used to achieve each benchmark problem.  Functionally all the solutions produced the same result.  The benchmark problems are listed below:
 
 \begin{itemize}
 \item Decomposing phone numbers
@@ -1085,7 +1088,7 @@ To evaluate the how successful this implementation of SNOBOL4 style patterns wit
 \item Number of times a word is used in a file
 \end{itemize}
 
-\textbf{\subsection{Decomposing phone numbers}}
+\textbf{\subsubsection{Decomposing phone numbers}}
 For the purpose of decomposing phone numbers in North America, each piece of example code must identify the following:
 \begin{singlespace}
 \begin{enumerate}
@@ -1110,9 +1113,9 @@ The following example phone numbers should be recognizable:
 \end{enumerate}
 \end{singlespace}
 
-An input fragment of "\texttt{Home: (800) 555-1212}" should result in identifying the area code as \texttt{800}, the trunk as \texttt{555}, the remainder of the number as being \texttt{1212}.
+An input fragment of $"$\texttt{Home: (800) 555-1212}$"$ should result in identifying the area code as \texttt{800}, the trunk as \texttt{555}, the remainder of the number as being \texttt{1212}.
 
-In the string scanning environment it can be achieved with the following code:
+A string scanning environment solution can be achieved with the following code:
 \begin{verbatim}
 procedure digits(N)
    if N = 0 then return ""
@@ -1215,7 +1218,7 @@ The following table shows the number of lines, words and characters that were us
 	\centering
 	\begin{tabular}{|l|l|l|l|l|}
 		\hline\hline
-		 & Lines & Words & Chars w/ ws & Chars wo/ ws\\
+		 & Lines & Words & Chars & Chars less white space\\
 		\hline
 		String scanning & 21 & 74 & 510 & 364 \\
 		Gaikaiwari's Patterns & 9 & 81 & 532 & 409 \\
@@ -1225,9 +1228,9 @@ The following table shows the number of lines, words and characters that were us
 		\hline
 	\end{tabular}
 \end{table}\\
-In this first benchmark the string scanning solution used more lines of code, but used fewer words and characters to accomplish the same result as the other solutions.
+In this first benchmark the string scanning solution used more lines of code, but used fewer words and characters to accomplish the same result as the other solutions.  The string scanning solution used the fewest number of words with 74, next was the the pattern solution with 80 words.  The solution with the least number of characters was the pattern solution with 504 characters compared with 510 for the string scanning solution; but when white space removed the string scanning solution uses fewer characters with 364 compared 401 for the pattern and unevaluated expression solutions.  
 
-\textbf{\subsection{Detecting words with double letters}}
+\textbf{\subsubsection{Detecting words with double letters}}
 In order to identify each word from a source file that has double letters, the procedure must be able to identify words like
 \begin{singlespace}
 \begin{itemize}
@@ -1318,20 +1321,22 @@ end
 	\centering
 	\begin{tabular}{|l|l|l|l|l|}
 		\hline\hline
-		 & Lines & Words & Chars w/ ws & Chars wo/ ws\\
+		 & Lines & Words & Chars & Chars less white space\\
 		\hline
 		String scanning & 18 & 53 & 470 & 250 \\
 		Gaikaiwari's Patterns & 6 & 34 & 245 & 205 \\
-		Unicon Patterns & 6 & 34 & 255 & 203 \\
+		Patterns & 6 & 34 & 255 & 203 \\
 		Pattern and string scanning & 13 & 48 & 371 & 254 \\
 		Unevaluated expression & 6 & 34 & 256 & 210 \\
 		\hline
 	\end{tabular}
 \end{table}
-The pattern examples had the fewest number of lines, words and characters used.  When a pattern match was performed using the tabmat operator in the string scanning environment, it resulted in fewer lines, words and characters as compared with using the string scanning environment alone.  It also condensed the string analysis of each individual word to a single line testing for the presence of a double letter.  For novice users of Unicon, this last example would be the easiest to understand.
+The pattern examples had the fewest number of lines, words and characters used.  The pattern and unevaluated expression examples had the fewest number of words with 34 words.  
 
-\textbf{\subsection{Strings of the form \emph{$A^nB^nC^n$}}}
-The third benchmark problem is the common language that cannot be parsed by a CFG grammar as was shown in \cite{Gaikaiwari2005}.  The programs write \texttt{accepted} when the string of characters containing "a"s, "b"s and "c"s is in the form of $a^nb^nc^n$ and write \texttt{rejected} when any other string is provided.
+When a pattern match was performed using the tabmat operator in the string scanning environment, it resulted in fewer lines, words and characters as compared with using the string scanning environment alone.  It also condensed the string analysis of each individual word to a single line testing for the presence of a double letter.  For novice users of Unicon, this last example would be the easiest to understand.
+
+\textbf{\subsubsection{Strings of the form \emph{$A^nB^nC^n$}}}
+The third benchmark problem is the common language that cannot be parsed by a CFG grammar as was shown in \cite{Gaikaiwari2005}.  The programs write \texttt{accepted} when the string of characters containing a's, b's and c's is in the form of $a^nb^nc^n$ and write \texttt{rejected} when any other string is provided.
 
 The string scanning example shown below is from \cite{Gaikaiwari2005} and \cite{Griswold1975}.  It is able to resolve the problem with 12 lines of code.\\
 \begin{verbatim}
@@ -1415,19 +1420,21 @@ end
 	\centering
 	\begin{tabular}{|l|l|l|l|l|}
 		\hline\hline
-		 & Lines & Words & Chars w/ ws & Chars wo/ ws\\
+		 & Lines & Words & Chars & Chars less white space\\
 		\hline
 		String scanning & 12 & 35 & 226 & 162 \\
 		Gaikaiwari's Patterns & 12 & 64 & 349 & 253 \\
-		Unicon Patterns & 9 & 56 & 290 & 195 \\
+		Patterns & 9 & 56 & 290 & 195 \\
 		Pattern and string scanning & 9 & 53 & 275 & 185 \\
 		Unevaluated expression & 9 & 56 & 310 & 216 \\
 		\hline
 	\end{tabular}
 \end{table}
-The string scanning example may have used more lines than the pattern examples, but required fewer words or characters than all the other solutions.  Of the pattern examples, the \texttt{||} concatenation operator is more consistent lexically than the \texttt{\&\&} concatenation operator for the Unicon language.
+The string scanning example may have used more lines than the pattern examples, but required fewer words or characters than all the other solutions.  The string scanning example used 35 words, the pattern with string scanning was next with 53 words.   
 
-\textbf{\subsection{Number of times a word is used}}
+Of the pattern examples, the \texttt{||} concatenation operator is more consistent lexically than the \texttt{\&\&} concatenation operator for the Unicon language.
+
+\textbf{\subsubsection{Number of times a word is used}}
 To count the number of times a word is used in a block of text you need the algorithm to count every time the word is used, but not when the word is a part of some other word.  When counting the number of times the word \texttt{the} is used, counting \texttt{they, them, there} and so forth would not get the desired result.  So the algorithm must be refined enough to recognize the difference.
 
 The following sample code solves this problem using a string scanning environment by examining blocks of letters and testing to see if the block of text matches the testword.
@@ -1506,60 +1513,96 @@ end
 	\centering
 	\begin{tabular}{|l|l|l|l|l|}
 		\hline\hline
-		 & Lines & Words & Chars w/ ws & Chars wo/ ws\\
+		 & Lines & Words & Chars & Chars less white space\\
 		\hline
 		String scanning & 14 & 43 & 309 & 208 \\
 		Gaikaiwari's Patterns & 8 & 34 & 223 & 179 \\
-		Unicon Patterns & 8 & 34 & 217 & 173 \\
+		Patterns & 8 & 34 & 217 & 173 \\
 		Pattern and string scanning & 12 & 43 & 271 & 198 \\
 		Unevaluated expression & 8 & 34 & 240 & 189 \\
 		\hline
 	\end{tabular}
 \end{table}
-Again the pattern examples require the fewest lines and characters, demonstrating that they are more efficient for the user to generate a solution.  By allowing the use of \texttt{Any()} function in place of the \texttt{PNotAny()} function, reduces the number of pattern functions required for the same functionality.
+The pattern examples require the fewest lines and characters.  Their solutions required 34 words while the solutions including string scanning required 43 words.  The pattern solution used the fewest characters with 217.  These results demonstrate that patterns are more efficient for the user to generate a solution.  By allowing the use of \texttt{Any()} function in place of the \texttt{PNotAny()} function, reduces the number of pattern functions required for the same functionality.
+
+Overall, the patterns solutions were shorter than the string scanning solutions in two of the four benchmark problems.  The benchmark problems also demonstrate many alternative options in solving string analysis problems.  Users that prefer SNOBOL4 type patterns are now able to use patterns in Unicon.
+
+\textbf{\subsection{Functional Integration}}
+To further evaluate the success of the integration, the following were considered: improvements to the pattern function set, the completeness pattern and string scanning integration, and the improvements to the unevaluated expressions.
+
+\textbf{\subsubsection{Reduced Pattern Function Set}}
+The use of the complement operator \texttt{\~} allows the user execute the \texttt{NOTANY()}, \texttt{RTAB()} and \texttt{RPOS} pattern functions with \texttt{Any()}, \texttt{Tab()} and \texttt{Pos()} respectively.  The pattern functions with the complement operator were against their complementary operator and it was found that they performed their tasks at the same speed.  Therefore it was concluded that the \texttt{NOTANY()}, \texttt{RTAB()} and \texttt{RPOS} pattern functions were redundant.
+
+In the first benchmark problem, there were several examples of how to extract a phone number from a body of text.  A pattern function allowing the user to identify the number of times a pattern is replicated would have been very useful in defining the number of digits in each portion of the number.  If a user was looking for a pattern that is repeated several times, the \texttt{Repl()} pattern function would make the code shorter and cleaner.
+
+\textbf{\subsubsection{Pattern and String Scanning Integration}}
+The integration of Gaikaiwari's pattern matching environment and the Unicon string scanning environment resulted in allowing users to utilize the pattern matching facilities from a string scanning environment.  The tabmat operator \texttt{=} is used to make a pattern match within a string scanning operation.  
+
+When combined with an evaluation, it allows the user to easily make comparisons to complex patterns.  While performing a string scanning operation, the user wants to see if the next block of text matches a complex pattern that is defined the code would be \texttt{if =complexPattern then}.  With such an expression the index location in the subject string would be advanced to the end of the pattern, to save the content of the pattern the code to use would be \texttt{if mat := =complexPattern then}.
+
+By rewriting the \texttt{emit\_code\_for\_uneval()} function, the utilization of string scanning functions within a pattern definition is possible as an unevaluated expression.  Prior to this change, nested function calls within an unevaluated expressions were not possible.  When a user wants to use string scanning function calls as a part of pattern, it can be done with an unevaluated expression.  \texttt{pat := `tab(upto(\&letters))` $||$ Len(5)} results in a string containing five characters beginning at the first letter in the subject string.  Resolving the issue of allowing nested string scanning function calls from within a pattern definition, expanded the capabilities of making function calls from within unevaluated expressions.  
+
+\textbf{\subsubsection{More on Unevaluated Exressions}} 
+Procedure, method and variable call can still be a part of a pattern definition.  If they are not included in an unevaluated expression, they are static and their values are determined during pattern construction time.  If they are not defined prior to pattern construction then their value is \texttt{\&null}.  With a pattern definition of \texttt{pat := foo(arg)}, the procedure \texttt{foo()} would be called with the value of \texttt{arg} being passed as an argument.  If \texttt{arg} is not defined during compilation, then \texttt{foo()} will be passed \texttt{\&null} and \texttt{foo()} resulting in an error.  If \texttt{arg} is in an unevaluated expression as follows: \texttt{pat := foo(`arg`)}.  \texttt{foo()} will be evaluated before \texttt{arg} is established which will also result in a \texttt{\&null} error.  To avoid the \texttt{\&null} error, the function along with its arguments must all be included in the unevaluated expression as follows: \texttt{pat := `foo(arg)`}. 
+
+The changes made to the list generated at compile time for unevaluated expressions allows nested procedure calls similar to \texttt{pat := ‘foo(bar(arg))‘} and method calls such as \texttt{pat := ‘foo.bar(arg)‘}. It does not, however, support sub-string notation. Consider the following program:\\
+\begin{verbatim}
+   procedure main()
+      line := "abcdefghijklmnopqrstuvwxyz"
+      pattern := Len(‘foo(line[3:5])‘)
+      write(line ?? pattern)
+   end
+   
+   procedure foo(str)
+      return *str
+   end
+\end{verbatim}
+
+When it is compiled, a list will be generated for the unevaluated expression \texttt{foo(line[3:5])} resulting in (["foo", "line", "3", "5"]). When \texttt{foo()} is evaluated in runtime, it will recognize that there is only one argument for the procedure \texttt{foo()}, and will use the value of line for that argument. The subscript will be ignored. A solution to this problem is:\\
+\begin{verbatim}
+   procedure main()
+      line := "abcdefghijklmnopqrstuvwxyz"
+      sub := Pos(‘n‘) || Len(‘m‘)
+      pat := Len(‘foo(subline)‘)
+      n := 3
+      m := 5 - n
+      subline := line ?? sub
+      write(line ?? pat)
+   end
+   
+   procedure foo(str)54
+      return *str
+   end
+\end{verbatim}
+
+In this example, a pattern called \texttt{sub} is constructed with the pattern function \texttt{Pos()} setting the index location for the beginning of the match.  Although mathematical operations can be used within pattern functions, such as \texttt{Len(5 - 3)}, they do not work with unevaluated expressions such as \texttt{Len(‘m‘ - ‘n‘)}. Therefore this example performs the mathematical operations for \texttt{Len()} elsewhere, in this case during the
+assignment of m. In the assignment of \texttt{subline} a pattern match is performed on line with the pattern sub resulting in the value \texttt{"cd"}. This is passed to the procedure \texttt{foo()} when a pattern match of \texttt{line}  is performed with the pattern \texttt{pat} and the value \texttt{2} is returned for the pattern function \texttt{Len()}. This finally produces and writes the substring \texttt{"ab"}.
+
+Unevaluated expressions can be used in pattern definitions to perform string scanning functions, make nested procedure and method calls, but cannot be used with subscripts, nor can be used as operands in mathematical operations.  This expansion of the unevaluated expression gives the user greater flexibility in deciding how to solve a particular problem.
+
+Overall patterns do provide more options for string analysis, whether it is within the string scanning environment or performed independently.  This integration allows those users who prefer SNOBOL4 style pattern matching to perform similar operations along with and as an integral part of string scanning operations.
 
 \pagebreak
 \textbf{\section{Conclusions}}
-In the process of integrating pattern matching with string scanning, the pattern function set has been reduced, string scanning is able to perform pattern matching with the tabmat operator \texttt{=}, pattern matching can perform string scanning operations, and the unevaluated expressions can handle complex procedure and method calls.  
+The integration of patterns and string scanning has been successful and provides some promising benefits for string analysis.
 
-\subsection{Reduced Pattern Function Set}
-The integration of Gaikaiwari's pattern matching environment and the Unicon string scanning environment resulted in allowing users to utilize the pattern matching facilities from a string scanning environment.  Pattern matching functions using the complement operator \texttt{\~} made some SNOBOL4 pattern functions redundant.  \texttt{NOTANY()}, \texttt{RTAB()} and \texttt{RPOS} are such examples and their functionality are available with \texttt{Any()}, \texttt{Tab()} and \texttt{Pos()} respectively.
+In each of the benchmark problems it was shown that pattern matching in Unicon is a viable option in string analysis.    Although, the modified pattern type developed for this thesis did not produce significantly improved code lengths as compared to Gaikaiwari's patterns, it still produced a significant improvement over the string scanning environment of Unicon in two of the four benchmark problems.  The benchmark problems demonstrated how these  problems can be resolved in a variety of ways that are now available to the user. 
 
-In the first benchmark problem, there were several examples of how to extract a phone number from a body of text.  A pattern function allowing the user to identify the number of times a pattern is replicated would have been very useful in defining the number of digits in each portion of the number.  If a user was looking for a pattern that is repeated several times, the \texttt{Repl()} pattern function would make the code shorter and cleaner. 
-
-\subsection{Pattern and String Scanning Integration}
-The tabmat operator \texttt{=} is used to make a pattern match within a string scanning operation.  When combined with an evaluation, it allows the user to easily make comparisons to complex patterns.  While performing a string scanning operation, the user wants to see if the next block of text matches a complex pattern that is defined the code would be \texttt{if =complexPattern then}.  With such an expression the index location in the subject string would be advanced to the end of the pattern, to save the content of the pattern the code to use would be \texttt{if mat := =complexPattern then}.
-
-Some of the changes to unevaluated expressions made string scanning functions available within a pattern.  When a user wants to use string scanning function calls as a part of pattern, it can be done with an unevaluated expression.  \texttt{pat := `tab(upto(&letters))` || Len(5)} results in a string containing five characters beginning at the first letter in the subject string.
-
-\subsection{Improvements to Unevaluated Exressions}
-Procedure, method and variable call can still be a part of a pattern definition.  If they are not included in an unevaluated expression, they are static and their values are determined during pattern construction time.  If they are not defined prior to pattern construction then their value is\texttt{&null}.  With a pattern definition of \texttt{pat := foo(arg)}, the procedure \texttt{foo()} would be called with the value of \texttt{arg} being passed as an argument.  If \texttt{arg} is not defined during compilation, then \texttt{foo()} will be passed \texttt{&null} and \texttt{foo()} had better be able to handle a \texttt{&null}.  Otherwise, an error could occur or the results will not be what the user intended.  
-
-%test this
-A way to avoid this problem is to include \texttt{arg} in an unevaluated expression as follows: \texttt{pat := foo(`arg`)}.  In this case, the current value of \texttt{arg} will be used whenever \texttt{pat} is used in a pattern match.
-
-
-
-\texttt{pat := Len(3) => arg || `foo(arg)`}
-\texttt{pat := `foo(bar(arg))`}
-\texttt{pat := `foo.bar(arg)`}
-
-%test this
-not supported:
-\texttt{pat := `foo(arg[n:n])`}
-
-\subsection{Benchmark Problems}
-In each of the benchmark problems it was shown that pattern matching in Unicon is a viable option in string analysis.    Although, the modified pattern type developed for this thesis did not produce significantly improved code lengths as compared to Gaikaiwari's patterns, it still produced a significant improvement over the string scanning environment of Unicon in two of the four benchmark problems.  
-
-Pattern matching does not always result in shorter and therefore simpler code, pattern matching is a useful improvement to the Unicon language.  It allows those users that prefer the functionality of SNOBOL4 patterns to use a similar system of string analysis.
+Pattern matching does not always result in shorter and therefore simpler code, it is however, a useful improvement to the Unicon language.  It allows those users that prefer the functionality of SNOBOL4 patterns to use a similar system of string analysis.
 
 The lexical changes to Gaikaiwari's pattern matching are an improvement, as it is more consistent with the Unicon language.  
+
+It is possible to perform pattern matching operations from within the string scanning environment by using the tabmat \texttt{=} operator.  As well as make string scanning function calls from a pattern definition with the use of the unevaluated expression.  Unevaluated expressions can handle nested function and method calls, but have not been updated to handle substrings.  Nor can unevaluated expression be used as operands of mathematical equations.
+
+The pattern function set has been reduced from Gaikaiwari's patterns to address some redundancy issues.  Additional pattern functions such as \texttt{Repl()} will further improve the functionality of patterns in Unicon. 
+
+With these improvements, integration of patterns with string scanning has been successfully accomplished and provides the benefit of the option of using SNOBOL4 style patterns for string analysis in the Unicon language.  Unicon users now have more string analysis options.  Users will discover in what string analysis problems it is simpler to use either string scanning or pattern matching.
 
 \pagebreak
 \textbf{\section{Future Work}}
 Although the pattern matching and string scanning have been integrated, there are areas that need improvement.  
 
-Patterns can handle procedure calls, but the values are evaluated at pattern construction time.  Therefore it is necessary to use the unevaluated expression to evaluate them at pattern evaluation time if any of the parameters are assigned in the pattern itself.  As it stands now, the unevaluated expressions can not handle procedure calls.
+The use of unevaluated expressions in the construction patterns allows the user to move beyond the static nature pattern matching functions. Currently unevaluated expressions do not support subscripts. Capitalizing on Unicon’s use of subscripts to define sub-strings will further enhance versatility of unevaluated expressions in the pattern matching facilities.
 
 Additional primitive pattern functions would also reduce the complexity of many pattern definitions.  For example: In the first benchmark problem, to identify three digits in a row required \texttt{Any(\&digits)} to be repeated three times.  A primitive \texttt{Dupl(p, n)} which allows the user to identify a pattern that has been duplicated for a fixed number of times would be useful.  Had the user been repeating a pattern several dozen times, it would prove to be a great improvement in functionality in defining the pattern.  There could be other such primitives that add to the flexibility and improve the functionality of defining patterns.
 
