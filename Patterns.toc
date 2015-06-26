@@ -5,34 +5,34 @@
 \contentsline {section}{Table of Contents}{v}
 \contentsline {section}{\numberline {1}Introduction}{1}
 \contentsline {section}{\numberline {2}Background}{3}
-\contentsline {subsection}{\numberline {2.1}Pattern Matching}{4}
-\contentsline {section}{\numberline {3}Design Considerations}{6}
-\contentsline {subsection}{\numberline {3.1}Pattern matching statements}{6}
-\contentsline {subsubsection}{\numberline {3.1.1}Pattern matching within String Scanning}{8}
-\contentsline {subsubsection}{\numberline {3.1.2}String Scanning within Patterns}{8}
-\contentsline {subsection}{\numberline {3.2}SNOBOL4 and Unicon pattern operators}{9}
-\contentsline {subsection}{\numberline {3.3}SNOBOL4 and Unicon pattern functions}{10}
-\contentsline {subsubsection}{\numberline {3.3.1}Complements with functions}{11}
-\contentsline {subsubsection}{\numberline {3.3.2}Index Related Functions}{12}
-\contentsline {subsubsection}{\numberline {3.3.3}Backtracking and Terminating Functions}{12}
+\contentsline {subsection}{\numberline {2.1}Icon and Unicon}{3}
+\contentsline {subsection}{\numberline {2.2}Pattern Matching}{4}
+\contentsline {section}{\numberline {3}Design Considerations}{7}
+\contentsline {subsection}{\numberline {3.1}Pattern matching statements}{7}
+\contentsline {subsubsection}{\numberline {3.1.1}Pattern matching within String Scanning}{9}
+\contentsline {subsubsection}{\numberline {3.1.2}String Scanning within Patterns}{9}
+\contentsline {subsection}{\numberline {3.2}SNOBOL4 and Unicon pattern operators}{10}
+\contentsline {subsection}{\numberline {3.3}SNOBOL4 and Unicon pattern functions}{11}
+\contentsline {subsubsection}{\numberline {3.3.1}Complements with functions}{12}
+\contentsline {subsubsection}{\numberline {3.3.2}Index Related Functions}{13}
 \contentsline {section}{\numberline {4}Implementation}{14}
 \contentsline {subsection}{\numberline {4.1}Pattern matching statements}{15}
 \contentsline {subsubsection}{\numberline {4.1.1}Anchored mode from string scanning}{15}
 \contentsline {subsubsection}{\numberline {4.1.2}String Scanning Functions as Unevaluated Expressions}{18}
 \contentsline {subsubsection}{\numberline {4.1.3}Procedure and Method calls in Unevaluated Expressions}{25}
 \contentsline {subsubsection}{\numberline {4.1.4}String and Pattern Concatenation Operators}{33}
-\contentsline {subsection}{\numberline {4.2}Index Related Functions}{35}
-\contentsline {section}{\numberline {5}Evaluation}{37}
-\contentsline {subsection}{\numberline {5.1}Benchmarks}{37}
-\contentsline {subsubsection}{\numberline {5.1.1}Decomposing phone numbers}{38}
-\contentsline {subsubsection}{\numberline {5.1.2}Detecting words with double letters}{42}
-\contentsline {subsubsection}{\numberline {5.1.3}Strings of the form \emph {$A^nB^nC^n$}}{45}
-\contentsline {subsubsection}{\numberline {5.1.4}Number of times a word is used}{48}
-\contentsline {subsection}{\numberline {5.2}Functional Integration}{51}
-\contentsline {subsubsection}{\numberline {5.2.1}Reduced Pattern Function Set}{51}
-\contentsline {subsubsection}{\numberline {5.2.2}Pattern and String Scanning Integration}{51}
-\contentsline {subsubsection}{\numberline {5.2.3}More on Unevaluated Exressions}{52}
-\contentsline {section}{\numberline {6}Conclusions}{56}
-\contentsline {section}{\numberline {7}Future Work}{58}
-\contentsline {section}{Bibliography}{60}
-\contentsline {section}{Appendix A: Pattern Facilities Language Reference}{61}
+\contentsline {subsection}{\numberline {4.2}Index Related Functions}{36}
+\contentsline {section}{\numberline {5}Evaluation}{38}
+\contentsline {subsection}{\numberline {5.1}Benchmarks}{38}
+\contentsline {subsubsection}{\numberline {5.1.1}Decomposing phone numbers}{39}
+\contentsline {subsubsection}{\numberline {5.1.2}Detecting words with double letters}{43}
+\contentsline {subsubsection}{\numberline {5.1.3}Strings of the form \emph {$A^nB^nC^n$}}{46}
+\contentsline {subsubsection}{\numberline {5.1.4}Number of times a word is used}{49}
+\contentsline {subsection}{\numberline {5.2}Functional Integration}{52}
+\contentsline {subsubsection}{\numberline {5.2.1}Reduced Pattern Function Set}{52}
+\contentsline {subsubsection}{\numberline {5.2.2}Pattern and String Scanning Integration}{53}
+\contentsline {subsubsection}{\numberline {5.2.3}More on Unevaluated Expressions}{54}
+\contentsline {section}{\numberline {6}Conclusions}{57}
+\contentsline {section}{\numberline {7}Future Work}{59}
+\contentsline {section}{Bibliography}{61}
+\contentsline {section}{Appendix A: Pattern Facilities Language Reference}{62}
