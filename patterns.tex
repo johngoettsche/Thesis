@@ -183,7 +183,7 @@ Icon is a successor to SNOBOL4, which expanded upon the goal directed evaluation
 
 While SNOBOL patterns are instances of a structured data type that are used deductively to test whether the pattern exists within a subject string, a string scanning environment uses a set of functions to inductively analyze or extract data from the subject string.  Patterns are pre-defined and applied later, while string scanning is performed as string scanning functions are executed.  Patterns allow composition and re-use in more flexible ways than is the case for code, which only has procedure and co-expression granularity.  A co-expression is an independent, encapsulated thread-like context, allowing the results of an expression to be retrieved one at a time\cite{JefferyUnicon}.
 
-This paper briefly explores the background of SNOBOL4 patterns and Unicon string scanning functions.  It discusses design considerations for integrating SNOBOL4 patterns within Unicon string scanning environments, a description of how proposed changes were implemented, and the benchmarks used to evaluate the success of the integration.
+This paper briefly explores the background of SNOBOL4 patterns and Unicon string scanning functions.  It discusses design considerations for integrating SNOBOL4 patterns within Unicon string scanning environments, a description of how proposed changes were implemented, evaluation of the integration and a review of benchmark problems, and the success of the integration.
 
 \pagebreak
 \textbf{\section{Background}}
