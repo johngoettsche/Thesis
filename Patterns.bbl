@@ -1,8 +1,8 @@
 \begin{thebibliography}{1}
 
 \bibitem{Snobol}
-R.~E. Griswold, I.~P. Polonsky, and J.~Poage, {\em The SNOBOL4 Programming
-  Language}.
+R.~E. Griswold, I.~P. Polonsky, and J.~Poage, {\em {The SNOBOL4 Programming
+  Language}}.
 \newblock Prentice-Hall, 1971.
 
 \bibitem{Gaikaiwari2005}
@@ -13,16 +13,33 @@ S.~Gaikaiwari, ``{Adapting SNOBOL-style Patterns to the Unicon Language},''
 R.~E. Griswold and M.~T. Griswold, {\em The Icon Programming Language}.
 \newblock Prentice-Hall Englewood Cliffs, NJ, 3~ed., 1983.
 
-\bibitem{Griswold1980}
-R.~E. Griswold, {\em Pattern Matching in Icon}.
-\newblock University of Arizona, Department of Computer Science, 1980.
-
 \bibitem{JefferyUnicon}
 C.~Jeffery, S.~Mohamed, R.~Pereda, and R.~Parlett, {\em Programming with
   Unicon}.
 \newblock 2004.
 
+\bibitem{Griswold1980}
+R.~E. Griswold, {\em Pattern Matching in Icon}.
+\newblock The Univ. of Arizona Computer Science Technical Report TR 80-25,
+  1980.
+
+\bibitem{Jeffery2010}
+S.~Jeffery, C.~Jeffery, and P.~Thomas, ``Lessons from the development of sseus:
+  a system for entry and management of peer-reviewed data,'' in {\em in the
+  43rd Hawaii International Conference on System Sciences (HICSS)}, pp.~1--8,
+  IEEE, 2010.
+
 \bibitem{JefferyImp}
 C.~Jeffery, {\em Implementation of Icon and Unicon}.
+\newblock unicon.org, 2014.
+
+\bibitem{walker1994}
+K.~Walker, {\em The run-time implementation language for Icon}.
+\newblock The Univ. of Arizona Icon Project Document IPD 261, 1994.
+
+\bibitem{Griswold1975}
+R.~E. Griswold, ``{Extensible Pattern Matching in SNOBOL4},'' in {\em
+  Proceedings of the 1975 Annual Conference}, ACM '75, (New York, NY, USA),
+  pp.~248--252, ACM, 1975.
 
 \end{thebibliography}

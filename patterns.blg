@@ -1,48 +1,5 @@
-This is BibTeX, Version 0.99d (TeX Live 2013/Debian)
-Capacity: max_strings=35307, hash_size=35307, hash_prime=30011
-The top-level auxiliary file: patterns.aux
+This is BibTeX, Version 0.99dThe top-level auxiliary file: patterns.aux
 The style file: ieeetr.bst
 Database file #1: Patterns.bib
 Warning--empty publisher in JefferyUnicon
-You've used 8 entries,
-            1876 wiz_defined-function locations,
-            528 strings with 4519 characters,
-and the built_in function-call counts, 1427 in all, are:
-= -- 133
-> -- 53
-< -- 0
-+ -- 22
-- -- 14
-* -- 77
-:= -- 215
-add.period$ -- 13
-call.type$ -- 8
-change.case$ -- 4
-chr.to.int$ -- 0
-cite$ -- 9
-duplicate$ -- 76
-empty$ -- 166
-format.name$ -- 14
-if$ -- 351
-int.to.chr$ -- 0
-int.to.str$ -- 8
-missing$ -- 11
-newline$ -- 32
-num.names$ -- 8
-pop$ -- 42
-preamble$ -- 1
-purify$ -- 0
-quote$ -- 0
-skip$ -- 28
-stack$ -- 0
-substring$ -- 32
-swap$ -- 14
-text.length$ -- 0
-text.prefix$ -- 0
-top$ -- 0
-type$ -- 0
-warning$ -- 1
-while$ -- 11
-width$ -- 9
-write$ -- 75
 (There was 1 warning)
